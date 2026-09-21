@@ -4,6 +4,8 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-09-21
+
 ### Fixed
 
 - Preserve quoted email local parts containing `@` while normalizing only the domain.
