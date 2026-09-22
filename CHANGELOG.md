@@ -4,6 +4,18 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [2.1.0] - 2026-09-23
+
+### Fixed
+
+- Preserve a host application's exchange-rate provider binding when the
+  Primitives service provider registers.
+
+### Changed
+
+- Create the test fixture schema once per refreshed database and roll back
+  fixture rows between tests.
+
 ## [2.0.1] - 2026-09-22
 
 ### Fixed
