@@ -29,10 +29,8 @@ abstract class TestCase extends Orchestra
         ];
     }
 
-    protected function setUp(): void
+    protected function defineDatabaseMigrationsAfterDatabaseRefreshed(): void
     {
-        parent::setUp();
-
         Schema::create('primitive_test_models', function (Blueprint $table): void {
             $table->id();
             $table->string('email')->nullable();

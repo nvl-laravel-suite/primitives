@@ -30,6 +30,14 @@ use Nvl\Primitives\ValueObjects\TimezoneId;
 use Nvl\Primitives\ValueObjects\Url;
 use Nvl\Primitives\ValueObjects\Weight;
 
+it('rolls back primitive fixture rows between tests without rebuilding the schema', function (int $run): void {
+    expect(PrimitiveTestModel::query()->count())->toBe(0);
+
+    PrimitiveTestModel::query()->create(['email' => "fixture{$run}@example.com"]);
+
+    expect(PrimitiveTestModel::query()->count())->toBe(1);
+})->with(['first isolated run' => [1], 'second isolated run' => [2]]);
+
 it('normalizes and validates scalar identity primitives', function (): void {
     expect((string) EmailAddress::from(' Person@EXAMPLE.COM '))->toBe('Person@example.com')
         ->and(EmailAddress::from('person@example.com')->masked())->toBe('p****n@example.com')

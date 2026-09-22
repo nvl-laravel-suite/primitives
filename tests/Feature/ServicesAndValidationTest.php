@@ -29,6 +29,29 @@ it('requires configured exchange rates in the requested direction', function ():
         ->toThrow(ExchangeRateUnavailable::class);
 });
 
+it('preserves a consumer exchange-rate binding when the package provider registers', function (): void {
+    $consumerProvider = new class implements ExchangeRateProvider
+    {
+        public function rate(
+            CurrencyCode $from,
+            CurrencyCode $to,
+            ?DateTimeInterface $at = null,
+        ): string {
+            return '1.25';
+        }
+    };
+
+    app()->instance(ExchangeRateProvider::class, $consumerProvider);
+    app()->register(PrimitivesServiceProvider::class, true);
+
+    expect(app(ExchangeRateProvider::class))->toBe($consumerProvider)
+        ->and(app(CurrencyConverter::class)->convert(
+            Money::of('2.00', 'EUR'),
+            'USD',
+            BrickMathCompatibility::halfUp(),
+        )->amount())->toBe('2.50');
+});
+
 it('validates configured exchange-rate types and freshness metadata', function (
     mixed $configured,
     string $exception,

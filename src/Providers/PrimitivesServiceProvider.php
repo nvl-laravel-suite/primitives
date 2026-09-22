@@ -42,7 +42,7 @@ final class PrimitivesServiceProvider extends ServiceProvider
             );
         }
 
-        $this->app->bind(ExchangeRateProvider::class, $implementation);
+        $this->app->bindIf(ExchangeRateProvider::class, $implementation);
     }
 
     /**
