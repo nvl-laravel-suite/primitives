@@ -1,12 +1,12 @@
 # NVL Primitives — API and usage
 
-[← NVL Laravel Suite](../../../README.md)
+[← NVL Laravel Suite](https://github.com/nvl-laravel-suite)
 
 ## Quick reference
 
 | Item | Value |
 |---|---|
-| Installed through | `composer require nvl/laravel-suite:^2.0` |
+| Installed through | `composer require nvl/primitives:^2.0` |
 | Module identifier | `nvl/primitives` |
 | PHP namespace | `Nvl\Primitives` |
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
@@ -38,7 +38,7 @@ It does not own users, settings, authorization, controllers, application routes,
 The package uses Brick Money/Math, Google's numbering metadata through `giggsey/libphonenumber-for-php`, the SWIFT-derived IBAN registry through `jschaedl/iban-validation`, and Symfony Intl data.
 
 ```bash
-composer require nvl/laravel-suite:^2.0
+composer require nvl/primitives:^2.0
 php artisan vendor:publish --tag=primitives-config
 php artisan vendor:publish --tag=primitives-translations
 php artisan vendor:publish --tag=primitives-skills
@@ -282,7 +282,7 @@ Malformed catalog entries and limits outside `1..250` fail immediately. Large or
 
 ## Spatie Data and TypeScript
 
-The package registers with `nvl/data`. Public contracts include `MoneyData`, `LengthData`, `CoordinatesData`, `PostalAddressData`, and `ReferenceOption`.
+The package registers with Core's Data provider. Public contracts include `MoneyData`, `LengthData`, `CoordinatesData`, `PostalAddressData`, and `ReferenceOption`.
 
 ```bash
 php artisan nvl:data:types:generate
