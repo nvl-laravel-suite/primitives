@@ -1,5 +1,24 @@
 # NVL Primitives — API and usage
 
+## Quickstart
+
+```sh
+composer require nvl/primitives:^5.0
+php artisan nvl:install primitives --dry-run
+php artisan nvl:install primitives
+```
+
+Required NVL dependencies: `nvl/core` (`^5.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
+Review the published common config, select one migration owner, and run schema preflight before existing-table upgrades. The installer does not enable features or run migrations. Follow the detailed installation and capability sections below before invoking a storage/provider operation.
+
+```php
+use Nvl\Primitives\ValueObjects\EmailAddress;
+$email = EmailAddress::from('reader@example.com');
+```
+
+Use the [event catalog](docs/events.md) and [Testing your app](#testing-your-app) below. The suite [getting-started guide](https://github.com/nvl-laravel-suite/laravel-suite/blob/main/docs/getting-started.md) provides a complete Comments host fixture; package archives retain their own local references.
+
+
 [← NVL Laravel Suite](https://github.com/nvl-laravel-suite)
 
 For support, [open an issue](https://github.com/nvl-laravel-suite/primitives/issues). For vulnerabilities, use
@@ -324,10 +343,103 @@ The source `@api` declarations identify supported workflows, extension contracts
 
 A package model returned or accepted by a public workflow is an identity/result handle. Use its declared type and `getKey()`, `getKeyName()`, `getMorphClass()`, `getRouteKey()`, `getRouteKeyName()`, `is()`, `isNot()`, and `relationLoaded()`. Read only explicitly declared in-memory `@nvl-consumer-read` fields; ordinary model PHPDocs and fillable attributes do not grant consumer reads. Obtain display projections through public reads. Persistence, additional model queries, relation access/loading, and generic model serialization are outside this contract. Host-model queries remain available, while traversal or aggregates of package capability relations require the package public reader or authorized adapter.
 
-## License
+## Testing your app
 
-Released under the [MIT License](LICENSE).
+Immutable currencies, money, percentages, units, formatters, and catalogs are
+direct APIs. This package has no Eloquent models or factories. Test calculations
+with native values and substitute only the existing `ExchangeRateProvider` when
+an application needs an exchange-rate boundary.
+
+```php
+use Brick\Math\RoundingMode;
+use Nvl\Primitives\Contracts\ExchangeRateProvider;
+use Nvl\Primitives\Services\CurrencyConverter;
+use Nvl\Primitives\ValueObjects\CurrencyCode;
+use Nvl\Primitives\ValueObjects\Money;
+
+$rates = Mockery::mock(ExchangeRateProvider::class);
+$rates->shouldReceive('rate')->once()
+    ->withArgs(fn (CurrencyCode $from, CurrencyCode $to, $at): bool =>
+        (string) $from === 'EUR' && (string) $to === 'USD' && $at === null)
+    ->andReturn('1.10');
+$this->app->instance(ExchangeRateProvider::class, $rates);
+$money = Money::of('10.00', 'EUR');
+$converted = $this->app->make(CurrencyConverter::class)
+    ->convert($money, 'USD', RoundingMode::HalfUp);
+expect($converted->amount())->toBe('11.00');
+```
+
+The configured default already uses a conditional transient binding and retains
+host replacements. A host HTTP-backed rate provider can use `Http::fake()` in
+its integration tests. Direct value tests and the injected rate test require no
+new symmetry interface, package fake, or database fixture.
+
+In Laravel application tests, register a native Mockery interface mock or a small
+implementation with `$this->app->instance(Contract::class, $substitute)` before
+resolving your application service. A host binding installed before package
+registration is retained; later contract replacements affect subsequent
+resolutions. Rebuild previously resolved host services after replacing their
+dependencies. Concrete implementations remain callable with their original
+constructors through major 5. Mocks exercise your application orchestration;
+package authorization, persistence, and external effects need real integration
+tests.
+
+ExchangeRateProvider already retains host bindings through bindIf. Immutable value construction and calculations remain direct; no new interface or factory is introduced.
+
+For static consumer checks, include the shipped
+[`consumer-audit.neon`](https://github.com/nvl-laravel-suite/core/blob/main/support/consumer-audit.neon) from
+`vendor/nvl/core/support/consumer-audit.neon` in your host PHPStan configuration
+and configure explicit `nvlConsumer.testPaths` for factory-backed tests. The
+extension checks supported APIs and model/query boundaries; it does not prove
+authorization or arbitrary dynamic SQL.
 
 ## Canonical configuration ownership
 
 Use `nvl-primitives` settings in `config/nvl-primitives.php` and canonical package environment names. Old generic roots are foreign unless an upgrading NVL host explicitly selects them in Core's default-off compatibility. Canonical false/null/empty values win; no old roots are populated or written back. Keep logical package/resource IDs unchanged. Review [Core's rename inventory and cache/worker cutover](https://github.com/nvl-laravel-suite/core/blob/main/UPGRADING.md#major-5-canonical-configuration-and-environment).
+
+## Testing your app
+
+Inject the supported contract rather than constructing its concrete Action or querying package tables. Replace `Nvl\Primitives\Contracts\Primitive` in Laravel's native container for a host-workflow test:
+
+```php
+use Nvl\Primitives\Contracts\Primitive;
+
+$double = Mockery::mock(Primitive::class);
+$this->app->instance(Primitive::class, $double);
+// Configure the exact equals arguments and documented return value for your host case.
+```
+
+The package's conditional native binding preserves host substitutions. Production uses the real contract; test doubles do not prove its storage/authorization behavior.
+
+This package has no persistent fixture model in the supported factory inventory. Test value objects and contract inputs directly; do not invent a package model factory.
+
+Use Laravel `Event::fake()`, `Queue::fake()`, `Mail::fake()` or `Storage::fake()` only for the effects the host test intends to isolate. Use real commits/listeners for timing proof. Add the optional Core consumer boundary rules to host PHPStan:
+
+```neon
+includes:
+    - vendor/nvl/core/support/consumer-audit.neon
+parameters:
+    nvlConsumer:
+        testPaths: [tests]
+        tableNames: []
+        exceptions: []
+```
+
+Rules read installed public metadata without suite boot. They flag internal symbols, package model queries/writes, capability relations and owned tables; they cannot prove dynamic code or runtime authorization. Exact exceptions require `file`, `identifier`, `symbol`, and a documented `reason`. New C3/C4/E tests, archives and guide execution remain pending until the integration phase records results.
+
+## Error codes and events
+
+All recognized package failures implement `Nvl\Support\Contracts\PackageException`; only `RespondableException` opts into safe response metadata. Keep native PHP programmer errors and Laravel/SDK exceptions distinct. The optional `PackageExceptionRenderer` is registered by the host in `withExceptions`; it leaves unrelated, marker-only and non-JSON handling to the host. Its JSON envelope is `{message:string, code:string, context:object}`. Request locale is host-owned; diagnostics/previous exceptions are not public copy. Event schemas and source connections are documented in [events](docs/events.md).
+
+The table lists enum discriminators, including any successful codes retained for compatibility. A code is not itself an HTTP status; the throwing exception's `suggestedStatus()` is authoritative, especially legacy/custom constructors. Empty context renders as `{}`; only documented JSON-safe context is presented.
+
+| Code | Suggested status | Public context | Translation key |
+| --- | --- | --- | --- |
+| `operation_failed` | Exception-defined; see `suggestedStatus()` | Declared safe scalar/array map; otherwise `{}` | `nvl-primitives::responsecode.operation_failed` |
+| `exchange_rate_stale` | 409 | Declared safe scalar/array map; otherwise `{}` | `nvl-primitives::responsecode.exchange_rate_stale` |
+| `exchange_rate_unavailable` | 422 | Declared safe scalar/array map; otherwise `{}` | `nvl-primitives::responsecode.exchange_rate_unavailable` |
+
+
+## License
+
+Released under the [MIT License](LICENSE).

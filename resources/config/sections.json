@@ -1,0 +1,19 @@
+{
+    "schema_version": 1,
+    "configs": {
+        "nvl-primitives": {
+            "required": [],
+            "common": [
+                "locales.supported"
+            ],
+            "advanced": [
+                "exchange_rates.implementation",
+                "exchange_rates.rates",
+                "money.default_locale",
+                "phone.default_region",
+                "reference.banks",
+                "reference.cities"
+            ]
+        }
+    }
+}

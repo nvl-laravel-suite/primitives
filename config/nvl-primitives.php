@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
 use Nvl\Support\Config\PackageEnvironment;
 
+/** Complete runtime defaults; publication sections are declared in ../resources/config/sections.json. */
 return [
     /*
     |--------------------------------------------------------------------------

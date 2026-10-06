@@ -161,6 +161,80 @@
             ],
             "constants": []
         },
+        "Nvl\\Primitives\\Enums\\PrimitivesResponseCode": {
+            "kind": "enum",
+            "file": "src/Enums/PrimitivesResponseCode.php",
+            "methods": [
+                "cases",
+                "from",
+                "tryFrom"
+            ],
+            "properties": [
+                "name",
+                "value"
+            ],
+            "constants": [
+                "ExchangeRateStale",
+                "ExchangeRateUnavailable",
+                "OperationFailed"
+            ]
+        },
+        "Nvl\\Primitives\\Exceptions\\ExchangeRateStale": {
+            "kind": "class",
+            "file": "src/Exceptions/ExchangeRateStale.php",
+            "methods": [
+                "forPair",
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Exceptions\\ExchangeRateUnavailable": {
+            "kind": "class",
+            "file": "src/Exceptions/ExchangeRateUnavailable.php",
+            "methods": [
+                "between",
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Exceptions\\InvalidPrimitive": {
+            "kind": "class",
+            "file": "src/Exceptions/InvalidPrimitive.php",
+            "methods": [
+                "for"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Exceptions\\PrimitivesException": {
+            "kind": "class",
+            "file": "src/Exceptions/PrimitivesException.php",
+            "methods": [
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
+            ],
+            "properties": [],
+            "constants": []
+        },
         "Nvl\\Primitives\\Rules\\ValidPhoneNumber": {
             "kind": "class",
             "file": "src/Rules/ValidPhoneNumber.php",

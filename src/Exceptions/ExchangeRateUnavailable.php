@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Nvl\Primitives\Exceptions;
 
-use RuntimeException;
-
 /**
+ * @api
+
  * Reports a currency pair for which no conversion rate is available.
  */
-final class ExchangeRateUnavailable extends RuntimeException
+final class ExchangeRateUnavailable extends PrimitivesException
 {
     /**
      * Create an exception for one currency pair.

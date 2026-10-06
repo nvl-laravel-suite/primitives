@@ -10,7 +10,6 @@ use Nvl\Data\Services\TypeScriptSourceRegistry;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
 use Nvl\Support\Globals\GlobalNames;
-use Nvl\Support\Providers\LocaleServiceProvider;
 use Nvl\Support\Traits\MergesPackageConfiguration;
 use Nvl\Support\Traits\RegistersNamespacedResources;
 
@@ -27,7 +26,6 @@ final class PrimitivesServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->register(LocaleServiceProvider::class);
         $this->mergePackageConfiguration(
             __DIR__.'/../../config/nvl-primitives.php',
             'primitives',

@@ -1,13 +1,5 @@
-# Contributing to NVL Primitives
+# Contributing
 
-This public repository is a publication mirror of private source. Open an issue
-here for a bug or proposal; include a reproduction and, if helpful, a patch.
-Maintainers apply accepted changes in source and publish a mirror release.
-Direct mirror pull requests do not update source. See the
-[organization contribution guide](https://github.com/nvl-laravel-suite/.github/blob/main/CONTRIBUTING.md).
+This repository is a read-only release mirror. Pull requests to the mirror are not accepted. Open a public issue with a reproducible example or a proposed patch. Maintainers apply reviewed changes in the private source repository and publish immutable releases from there.
 
-Changes must preserve immutability, canonical construction, equality, serialization, validation, and Laravel cast behavior.
-
-Add exhaustive datasets or property-style tests for valid and invalid inputs, precision, overflow, rounding, allocation, localization, and cast round trips. Run Pest, Pint, PHPStan at maximum strictness, Composer validation, dependency analysis, and distribution validation.
-
-New values must be application-neutral and must not introduce persistence or external API access.
+Report vulnerabilities privately through the [security policy](https://github.com/nvl-laravel-suite/primitives/security/policy). Public issues must not contain undisclosed vulnerability details.

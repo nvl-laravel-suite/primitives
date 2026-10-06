@@ -9,6 +9,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Nvl\Data\Providers\DataServiceProvider;
 use Nvl\Primitives\Providers\PrimitivesServiceProvider;
+use Nvl\Support\Providers\LocaleServiceProvider;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 /**
@@ -24,6 +25,7 @@ abstract class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
+            LocaleServiceProvider::class,
             DataServiceProvider::class,
             PrimitivesServiceProvider::class,
         ];
