@@ -204,7 +204,7 @@ $locale->regionCode(); // alpha country or numeric UN M49 region
 $locale->region();
 ```
 
-Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locales live under `primitives.locales.supported`.
+Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locale options come from Core’s `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales`, use Translatable’s adapter, or bind the contract in the host. `primitives.locales.supported` is deprecated for one major cycle and remains a standalone compatibility fallback only.
 
 ## Exact quantities and structured values
 

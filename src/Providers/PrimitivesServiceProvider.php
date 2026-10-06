@@ -9,6 +9,7 @@ use InvalidArgumentException;
 use Nvl\Data\Services\TypeScriptSourceRegistry;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
+use Nvl\Support\Providers\LocaleServiceProvider;
 use Nvl\Support\Traits\MergesPackageConfiguration;
 
 /**
@@ -23,6 +24,7 @@ final class PrimitivesServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
+        $this->app->register(LocaleServiceProvider::class);
         $this->mergePackageConfiguration(
             __DIR__.'/../../config/primitives.php',
             'primitives',

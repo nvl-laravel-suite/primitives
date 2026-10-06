@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Nvl\Primitives\Services;
 
 use Illuminate\Contracts\Config\Repository;
+use InvalidArgumentException;
 use Nvl\Primitives\Data\ReferenceOption;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\ValueObjects\LocaleCode;
+use Nvl\Support\Contracts\LocaleCatalog;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Currencies;
 use Symfony\Component\Intl\Languages;
@@ -23,6 +25,7 @@ final readonly class ReferenceCatalog
      */
     public function __construct(
         private Repository $config,
+        private LocaleCatalog $locales,
     ) {}
 
     /**
@@ -110,20 +113,16 @@ final readonly class ReferenceCatalog
         ?string $displayLocale = null,
         int $limit = 50,
     ): array {
-        $configured = $this->config->get('primitives.locales.supported', []);
-
-        if (! is_array($configured)) {
-            throw InvalidPrimitive::for('locale catalog', 'supported locales must be an array.');
+        try {
+            $configured = $this->locales->supported();
+        } catch (InvalidArgumentException $exception) {
+            throw InvalidPrimitive::for('locale catalog', $exception->getMessage());
         }
 
         $displayLocale = $this->displayLocale($displayLocale);
         $options = [];
 
         foreach ($configured as $locale) {
-            if (! is_string($locale)) {
-                throw InvalidPrimitive::for('locale catalog', 'every supported locale must be a string.');
-            }
-
             $code = LocaleCode::from($locale);
             $script = $code->script();
             $region = $code->regionCode();

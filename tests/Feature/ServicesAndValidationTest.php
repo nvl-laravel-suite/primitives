@@ -19,6 +19,7 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 use Nvl\Primitives\ValueObjects\CurrencyCode;
 use Nvl\Primitives\ValueObjects\EmailAddress;
 use Nvl\Primitives\ValueObjects\Money;
+use Nvl\Support\Contracts\LocaleCatalog;
 
 it('requires configured exchange rates in the requested direction', function (): void {
     config()->set('primitives.exchange_rates.rates', ['EUR/USD' => '1.10']);
@@ -152,7 +153,7 @@ it('constructs services through their explicit config dependency', function (): 
     $repository = app(Repository::class);
 
     expect(new ConfiguredExchangeRateProvider($repository))->toBeInstanceOf(ConfiguredExchangeRateProvider::class)
-        ->and(new ReferenceCatalog($repository))->toBeInstanceOf(ReferenceCatalog::class)
+        ->and(new ReferenceCatalog($repository, app(LocaleCatalog::class)))->toBeInstanceOf(ReferenceCatalog::class)
         ->and(new MoneyFormatter($repository))->toBeInstanceOf(MoneyFormatter::class);
 });
 
