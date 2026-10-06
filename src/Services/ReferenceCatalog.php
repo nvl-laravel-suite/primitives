@@ -17,6 +17,8 @@ use Symfony\Component\Intl\Scripts;
 
 /**
  * Searches normalized reference options without imposing an HTTP endpoint.
+ *
+ * @api
  */
 final readonly class ReferenceCatalog
 {

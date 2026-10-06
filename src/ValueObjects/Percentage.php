@@ -15,6 +15,8 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 
 /**
  * Exact percentage stored as a decimal ratio where 1 represents 100%.
+ *
+ * @api
  */
 final readonly class Percentage implements ScalarPrimitive
 {

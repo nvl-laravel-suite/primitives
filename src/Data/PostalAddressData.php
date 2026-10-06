@@ -11,6 +11,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Stable API and TypeScript representation of an international postal address.
+ *
+ * @api
  */
 #[TypeScript]
 final class PostalAddressData extends Data

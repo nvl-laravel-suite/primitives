@@ -19,6 +19,8 @@ use Nvl\Primitives\Support\BrickMoneyCompatibility;
 
 /**
  * Immutable, exact monetary amount backed by Brick Money.
+ *
+ * @api
  */
 final readonly class Money implements ArrayPrimitive
 {

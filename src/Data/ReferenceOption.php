@@ -11,6 +11,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Framework-neutral option returned by ISO and configured reference catalogs.
+ *
+ * @api
  */
 #[TypeScript]
 final class ReferenceOption extends Data

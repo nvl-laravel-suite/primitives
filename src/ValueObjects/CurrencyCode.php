@@ -14,6 +14,8 @@ use Symfony\Component\Intl\Currencies;
 
 /**
  * Valid ISO 4217 currency code with current fraction metadata.
+ *
+ * @api
  */
 final readonly class CurrencyCode implements ScalarPrimitive
 {

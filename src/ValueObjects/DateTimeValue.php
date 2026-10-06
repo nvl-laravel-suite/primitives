@@ -14,6 +14,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Timezone-safe instant stored as an ISO 8601 UTC timestamp.
+ *
+ * @api
  */
 final readonly class DateTimeValue implements ScalarPrimitive
 {

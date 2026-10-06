@@ -12,6 +12,8 @@ use Nvl\Primitives\ValueObjects\PhoneNumber;
 
 /**
  * Validates an international or region-specific telephone number.
+ *
+ * @api
  */
 final readonly class ValidPhoneNumber implements ValidationRule
 {

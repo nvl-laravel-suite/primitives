@@ -11,6 +11,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Stable API and TypeScript representation of exact money.
+ *
+ * @api
  */
 #[TypeScript]
 final class MoneyData extends Data

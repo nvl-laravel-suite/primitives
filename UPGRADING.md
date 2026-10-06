@@ -26,3 +26,7 @@ Changed canonical serialization is a data migration and must be handled by the c
 An explicit legacy `nvl-primitives.locales.supported` list is translated only when the standalone default has no canonical selection. Translatable's adapter or a host-bound catalog takes precedence. Run `php artisan nvl:doctor` to find deprecated configuration and conflicts before removing the old list.
 
 Primitives retains its stricter language/script/region/variant validation and uses Core's shared separator and casing normalization. No stored locale values are rewritten. Rebuild configuration caches and restart workers after configuration changes.
+
+## Tagged consumer PHP boundary
+
+Use source `@api` workflows, extension contracts, and value types for application integration. Direct use of untagged implementations or `@internal` members is unsupported. This classification keeps existing concrete Action signatures and runtime behavior; it does not authorize package model persistence, ad hoc queries, relation traversal, or generic model serialization. Returned models are identity/result handles with only the explicitly declared in-memory read fields described in the README.

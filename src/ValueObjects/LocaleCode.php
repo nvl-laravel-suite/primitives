@@ -15,6 +15,8 @@ use Symfony\Component\Intl\Scripts;
 
 /**
  * Normalized BCP 47 language tag with validated language, script, and region parts.
+ *
+ * @api
  */
 final readonly class LocaleCode implements ScalarPrimitive
 {

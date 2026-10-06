@@ -12,6 +12,8 @@ use Nvl\Primitives\ValueObjects\Money;
 
 /**
  * Formats money through a locale-aware boundary with a deterministic fallback.
+ *
+ * @api
  */
 final readonly class MoneyFormatter
 {

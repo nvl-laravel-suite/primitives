@@ -11,6 +11,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Immutable international postal address without presentation assumptions.
+ *
+ * @api
  */
 final readonly class PostalAddress implements ArrayPrimitive
 {

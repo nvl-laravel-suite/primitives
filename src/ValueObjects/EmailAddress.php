@@ -11,6 +11,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Immutable, syntactically validated email address.
+ *
+ * @api
  */
 final readonly class EmailAddress implements ScalarPrimitive
 {

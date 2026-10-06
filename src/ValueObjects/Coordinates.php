@@ -14,6 +14,8 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 
 /**
  * Immutable WGS84 latitude/longitude pair.
+ *
+ * @api
  */
 final readonly class Coordinates implements ArrayPrimitive
 {

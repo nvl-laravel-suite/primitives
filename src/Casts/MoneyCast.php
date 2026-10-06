@@ -15,6 +15,8 @@ use Nvl\Primitives\ValueObjects\Money;
  * Persists money as JSON by default, or as fixed-currency minor/decimal values.
  *
  * @implements CastsAttributes<Money|null, Money|array<string, mixed>|string|int|null>
+ *
+ * @api
  */
 final readonly class MoneyCast implements CastsAttributes
 {

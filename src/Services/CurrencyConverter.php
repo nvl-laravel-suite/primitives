@@ -12,6 +12,8 @@ use Nvl\Primitives\ValueObjects\Money;
 
 /**
  * Converts exact money through an injected exchange-rate boundary.
+ *
+ * @api
  */
 final readonly class CurrencyConverter
 {

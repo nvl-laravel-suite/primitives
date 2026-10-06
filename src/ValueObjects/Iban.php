@@ -13,6 +13,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Valid ISO 13616 International Bank Account Number.
+ *
+ * @api
  */
 final readonly class Iban implements ScalarPrimitive
 {

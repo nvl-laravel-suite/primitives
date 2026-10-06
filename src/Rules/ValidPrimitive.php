@@ -13,6 +13,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Validates input by constructing the requested scalar primitive.
+ *
+ * @api
  */
 final readonly class ValidPrimitive implements ValidationRule
 {

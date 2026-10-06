@@ -16,6 +16,8 @@ use Nvl\Primitives\Contracts\ArrayPrimitive;
  * @template TPrimitive of ArrayPrimitive
  *
  * @implements CastsAttributes<TPrimitive|null, TPrimitive|array<string, mixed>|string|null>
+ *
+ * @api
  */
 final readonly class ArrayPrimitiveCast implements CastsAttributes
 {

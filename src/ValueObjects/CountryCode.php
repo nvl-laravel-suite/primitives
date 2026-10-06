@@ -12,6 +12,8 @@ use Symfony\Component\Intl\Countries;
 
 /**
  * Valid ISO 3166-1 alpha-2 country code.
+ *
+ * @api
  */
 final readonly class CountryCode implements ScalarPrimitive
 {

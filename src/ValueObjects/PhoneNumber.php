@@ -15,6 +15,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Valid international telephone number persisted in E.164 form.
+ *
+ * @api
  */
 final readonly class PhoneNumber implements ScalarPrimitive
 {

@@ -14,6 +14,8 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 
 /**
  * Exact non-negative mass stored canonically in grams.
+ *
+ * @api
  */
 final readonly class Weight implements ScalarPrimitive
 {

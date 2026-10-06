@@ -11,6 +11,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Stable API and TypeScript representation of WGS84 coordinates.
+ *
+ * @api
  */
 #[TypeScript]
 final class CoordinatesData extends Data

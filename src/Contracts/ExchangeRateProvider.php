@@ -9,6 +9,8 @@ use Nvl\Primitives\ValueObjects\CurrencyCode;
 
 /**
  * Resolves a positive conversion rate from one currency to another.
+ *
+ * @api
  */
 interface ExchangeRateProvider
 {

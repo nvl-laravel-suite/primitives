@@ -10,6 +10,8 @@ use Stringable;
 
 /**
  * Marks an immutable, validated application value object.
+ *
+ * @api
  */
 interface Primitive extends Castable, JsonSerializable, Stringable
 {

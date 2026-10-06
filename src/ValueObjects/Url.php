@@ -11,6 +11,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Immutable absolute HTTP(S) URL with normalized scheme, host, and default port.
+ *
+ * @api
  */
 final readonly class Url implements ScalarPrimitive
 {

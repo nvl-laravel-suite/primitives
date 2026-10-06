@@ -15,6 +15,8 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 
 /**
  * Exact non-negative length normalized through metres.
+ *
+ * @api
  */
 final readonly class Length implements ArrayPrimitive
 {

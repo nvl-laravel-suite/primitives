@@ -11,6 +11,8 @@ use Spatie\TypeScriptTransformer\Attributes\TypeScript;
 
 /**
  * Stable TypeScript representation of an exact canonical length.
+ *
+ * @api
  */
 #[TypeScript]
 final class LengthData extends Data

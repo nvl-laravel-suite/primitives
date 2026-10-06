@@ -6,6 +6,8 @@ namespace Nvl\Primitives\Contracts;
 
 /**
  * Defines a primitive persisted as a JSON object in one database column.
+ *
+ * @api
  */
 interface ArrayPrimitive extends Primitive
 {
