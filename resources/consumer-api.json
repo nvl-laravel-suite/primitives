@@ -1,0 +1,514 @@
+{
+    "schema_version": 1,
+    "package": "nvl/primitives",
+    "psr4": {
+        "Nvl\\Primitives\\": "src"
+    },
+    "symbols": {
+        "Nvl\\Primitives\\Casts\\ArrayPrimitiveCast": {
+            "kind": "class",
+            "file": "src/Casts/ArrayPrimitiveCast.php",
+            "methods": [
+                "__construct",
+                "get",
+                "set"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Casts\\MoneyCast": {
+            "kind": "class",
+            "file": "src/Casts/MoneyCast.php",
+            "methods": [
+                "__construct",
+                "get",
+                "set"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Contracts\\ArrayPrimitive": {
+            "kind": "interface",
+            "file": "src/Contracts/ArrayPrimitive.php",
+            "methods": [
+                "equals",
+                "fromArray",
+                "toArray"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Contracts\\ExchangeRateProvider": {
+            "kind": "interface",
+            "file": "src/Contracts/ExchangeRateProvider.php",
+            "methods": [
+                "rate"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Contracts\\Primitive": {
+            "kind": "interface",
+            "file": "src/Contracts/Primitive.php",
+            "methods": [
+                "equals"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Data\\CoordinatesData": {
+            "kind": "class",
+            "file": "src/Data/CoordinatesData.php",
+            "methods": [
+                "__construct",
+                "fromCoordinates",
+                "scopedRules",
+                "toArray",
+                "toModel",
+                "toModelFiltered",
+                "toModelPatch",
+                "translatedAttributes",
+                "translatedMessages"
+            ],
+            "properties": [
+                "latitude",
+                "longitude"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Data\\LengthData": {
+            "kind": "class",
+            "file": "src/Data/LengthData.php",
+            "methods": [
+                "__construct",
+                "fromLength",
+                "scopedRules",
+                "toArray",
+                "toModel",
+                "toModelFiltered",
+                "toModelPatch",
+                "translatedAttributes",
+                "translatedMessages"
+            ],
+            "properties": [
+                "unit",
+                "value"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Data\\MoneyData": {
+            "kind": "class",
+            "file": "src/Data/MoneyData.php",
+            "methods": [
+                "__construct",
+                "fromMoney",
+                "scopedRules",
+                "toArray",
+                "toModel",
+                "toModelFiltered",
+                "toModelPatch",
+                "translatedAttributes",
+                "translatedMessages"
+            ],
+            "properties": [
+                "amount",
+                "currency",
+                "minor"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Data\\PostalAddressData": {
+            "kind": "class",
+            "file": "src/Data/PostalAddressData.php",
+            "methods": [
+                "__construct",
+                "fromAddress",
+                "scopedRules",
+                "toArray",
+                "toModel",
+                "toModelFiltered",
+                "toModelPatch",
+                "translatedAttributes",
+                "translatedMessages"
+            ],
+            "properties": [
+                "administrativeArea",
+                "country",
+                "line1",
+                "line2",
+                "locality",
+                "postalCode"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Data\\ReferenceOption": {
+            "kind": "class",
+            "file": "src/Data/ReferenceOption.php",
+            "methods": [
+                "__construct",
+                "scopedRules",
+                "toArray",
+                "toModel",
+                "toModelFiltered",
+                "toModelPatch",
+                "translatedAttributes",
+                "translatedMessages"
+            ],
+            "properties": [
+                "code",
+                "label",
+                "metadata"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Rules\\ValidPhoneNumber": {
+            "kind": "class",
+            "file": "src/Rules/ValidPhoneNumber.php",
+            "methods": [
+                "__construct",
+                "validate"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Rules\\ValidPrimitive": {
+            "kind": "class",
+            "file": "src/Rules/ValidPrimitive.php",
+            "methods": [
+                "__construct",
+                "validate"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Services\\CurrencyConverter": {
+            "kind": "class",
+            "file": "src/Services/CurrencyConverter.php",
+            "methods": [
+                "__construct",
+                "convert"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Services\\MoneyFormatter": {
+            "kind": "class",
+            "file": "src/Services/MoneyFormatter.php",
+            "methods": [
+                "__construct",
+                "format"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Services\\ReferenceCatalog": {
+            "kind": "class",
+            "file": "src/Services/ReferenceCatalog.php",
+            "methods": [
+                "__construct",
+                "banks",
+                "cities",
+                "countries",
+                "currencies",
+                "languages",
+                "locales"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Coordinates": {
+            "kind": "class",
+            "file": "src/ValueObjects/Coordinates.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "distanceTo",
+                "equals",
+                "from",
+                "fromArray",
+                "fromString",
+                "googleMapsUrl",
+                "jsonSerialize",
+                "latitude",
+                "longitude",
+                "toArray"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\CountryCode": {
+            "kind": "class",
+            "file": "src/ValueObjects/CountryCode.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "jsonSerialize",
+                "name",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\CurrencyCode": {
+            "kind": "class",
+            "file": "src/ValueObjects/CurrencyCode.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "fractionDigits",
+                "from",
+                "jsonSerialize",
+                "name",
+                "storageValue",
+                "symbol",
+                "toBrick",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\DateTimeValue": {
+            "kind": "class",
+            "file": "src/ValueObjects/DateTimeValue.php",
+            "methods": [
+                "__toString",
+                "carbon",
+                "castUsing",
+                "equals",
+                "from",
+                "fromDateTime",
+                "inTimezone",
+                "jsonSerialize",
+                "now",
+                "storageValue"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\EmailAddress": {
+            "kind": "class",
+            "file": "src/ValueObjects/EmailAddress.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "domain",
+                "equals",
+                "from",
+                "jsonSerialize",
+                "localPart",
+                "masked",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Iban": {
+            "kind": "class",
+            "file": "src/ValueObjects/Iban.php",
+            "methods": [
+                "__toString",
+                "bankIdentifier",
+                "bban",
+                "castUsing",
+                "checksum",
+                "country",
+                "equals",
+                "formatted",
+                "from",
+                "jsonSerialize",
+                "masked",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Length": {
+            "kind": "class",
+            "file": "src/ValueObjects/Length.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "fromArray",
+                "in",
+                "jsonSerialize",
+                "toArray"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\LocaleCode": {
+            "kind": "class",
+            "file": "src/ValueObjects/LocaleCode.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "jsonSerialize",
+                "language",
+                "region",
+                "regionCode",
+                "script",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Money": {
+            "kind": "class",
+            "file": "src/ValueObjects/Money.php",
+            "methods": [
+                "__toString",
+                "absolute",
+                "add",
+                "allocate",
+                "amount",
+                "castUsing",
+                "compare",
+                "convert",
+                "currency",
+                "divide",
+                "equals",
+                "fromArray",
+                "isNegative",
+                "isPositive",
+                "isZero",
+                "jsonSerialize",
+                "minor",
+                "minorAmount",
+                "multiply",
+                "negate",
+                "of",
+                "split",
+                "subtract",
+                "toArray",
+                "toBrick",
+                "zero"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Percentage": {
+            "kind": "class",
+            "file": "src/ValueObjects/Percentage.php",
+            "methods": [
+                "__toString",
+                "add",
+                "castUsing",
+                "decimal",
+                "equals",
+                "from",
+                "fromDecimal",
+                "fromPercent",
+                "full",
+                "isNormalized",
+                "jsonSerialize",
+                "of",
+                "ofRounded",
+                "percent",
+                "percentRounded",
+                "storageValue",
+                "subtract",
+                "zero"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\PhoneNumber": {
+            "kind": "class",
+            "file": "src/ValueObjects/PhoneNumber.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "fromRegion",
+                "international",
+                "jsonSerialize",
+                "national",
+                "region",
+                "rfc3966",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\PostalAddress": {
+            "kind": "class",
+            "file": "src/ValueObjects/PostalAddress.php",
+            "methods": [
+                "__construct",
+                "__toString",
+                "castUsing",
+                "equals",
+                "fromArray",
+                "jsonSerialize",
+                "toArray"
+            ],
+            "properties": [
+                "administrativeArea",
+                "country",
+                "line1",
+                "line2",
+                "locality",
+                "postalCode"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Url": {
+            "kind": "class",
+            "file": "src/ValueObjects/Url.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "host",
+                "isSecure",
+                "jsonSerialize",
+                "scheme",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\Weight": {
+            "kind": "class",
+            "file": "src/ValueObjects/Weight.php",
+            "methods": [
+                "__toString",
+                "add",
+                "castUsing",
+                "equals",
+                "from",
+                "grams",
+                "inGrams",
+                "inKilograms",
+                "inOunces",
+                "inPounds",
+                "jsonSerialize",
+                "kilograms",
+                "ounces",
+                "pounds",
+                "storageValue",
+                "subtract"
+            ],
+            "properties": [],
+            "constants": []
+        }
+    },
+    "models": {},
+    "capability_relations": {},
+    "tables": {}
+}
