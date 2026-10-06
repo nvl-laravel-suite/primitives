@@ -3,7 +3,15 @@
     "description": "Immutable application value objects, exact money, validation, and ISO reference catalogs for Laravel",
     "type": "library",
     "license": "MIT",
-    "keywords": ["laravel", "value-object", "money", "phone", "iban", "locale", "currency"],
+    "keywords": [
+        "laravel",
+        "value-object",
+        "money",
+        "phone",
+        "iban",
+        "locale",
+        "currency"
+    ],
     "require": {
         "php": "^8.3",
         "ext-ctype": "*",
@@ -16,7 +24,7 @@
         "jschaedl/iban-validation": "^2.7",
         "laravel/framework": "^13.0",
         "nesbot/carbon": "^2.72 || ^3.0",
-        "nvl/core": "^2.0",
+        "nvl/core": "^5.0",
         "spatie/laravel-data": "^4.23",
         "spatie/typescript-transformer": "^3.3",
         "symfony/intl": "^7.0 || ^8.0",
@@ -46,12 +54,16 @@
         "analyse": "phpstan analyse --memory-limit=2G",
         "format": "pint --parallel --format agent",
         "format:test": "pint --parallel --test --format agent",
-        "quality": ["@format:test", "@analyse", "@test"],
+        "quality": [
+            "@format:test",
+            "@analyse",
+            "@test"
+        ],
         "test": "pest --compact"
     },
     "extra": {
         "branch-alias": {
-            "dev-main": "2.x-dev"
+            "dev-main": "5.x-dev"
         },
         "laravel": {
             "providers": [
@@ -74,7 +86,9 @@
             "/.phpunit.result.cache",
             "/phpstan.neon.dist",
             "/phpunit.xml.dist",
-            "/tests"
+            "/tests",
+            "/.DS_Store",
+            "/**/.DS_Store"
         ]
     },
     "minimum-stability": "stable",

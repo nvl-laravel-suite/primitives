@@ -9,8 +9,10 @@ use InvalidArgumentException;
 use Nvl\Data\Services\TypeScriptSourceRegistry;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
+use Nvl\Support\Globals\GlobalNames;
 use Nvl\Support\Providers\LocaleServiceProvider;
 use Nvl\Support\Traits\MergesPackageConfiguration;
+use Nvl\Support\Traits\RegistersNamespacedResources;
 
 /**
  * Registers primitive configuration, contracts, type sources, and package resources.
@@ -18,6 +20,7 @@ use Nvl\Support\Traits\MergesPackageConfiguration;
 final class PrimitivesServiceProvider extends ServiceProvider
 {
     use MergesPackageConfiguration;
+    use RegistersNamespacedResources;
 
     /**
      * Register package configuration and default boundary implementations.
@@ -26,12 +29,12 @@ final class PrimitivesServiceProvider extends ServiceProvider
     {
         $this->app->register(LocaleServiceProvider::class);
         $this->mergePackageConfiguration(
-            __DIR__.'/../../config/primitives.php',
+            __DIR__.'/../../config/nvl-primitives.php',
             'primitives',
         );
 
         $implementation = config(
-            'primitives.exchange_rates.implementation',
+            'nvl-primitives.exchange_rates.implementation',
             ConfiguredExchangeRateProvider::class,
         );
 
@@ -53,14 +56,14 @@ final class PrimitivesServiceProvider extends ServiceProvider
     public function boot(TypeScriptSourceRegistry $typeScriptSources): void
     {
         $typeScriptSources->register(__DIR__.'/..', 'nvl/primitives');
-        $this->loadTranslationsFrom(__DIR__.'/../../lang', 'primitives');
+        $this->app->make(GlobalNames::class)->translations('primitives', __DIR__.'/../../lang', $this->app->make('translation.loader'));
 
         $this->publishes([
-            __DIR__.'/../../config/primitives.php' => config_path('primitives.php'),
+            __DIR__.'/../../config/nvl-primitives.php' => config_path('nvl-primitives.php'),
         ], 'primitives-config');
 
         $this->publishes([
-            __DIR__.'/../../lang' => lang_path('vendor/primitives'),
+            __DIR__.'/../../lang' => lang_path('vendor/nvl-primitives'),
         ], 'primitives-translations');
 
         $this->publishes([

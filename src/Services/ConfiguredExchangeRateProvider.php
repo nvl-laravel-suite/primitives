@@ -41,7 +41,7 @@ final readonly class ConfiguredExchangeRateProvider implements ExchangeRateProvi
             return '1';
         }
 
-        $rates = $this->config->get('primitives.exchange_rates.rates', []);
+        $rates = $this->config->get('nvl-primitives.exchange_rates.rates', []);
 
         if (! is_array($rates)) {
             throw InvalidPrimitive::for('exchange rates', 'the configured rates must be an array.');

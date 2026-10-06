@@ -184,7 +184,7 @@ final readonly class ReferenceCatalog
      */
     private function configured(string $catalog, ?string $search, int $limit): array
     {
-        $configured = $this->config->get("primitives.reference.{$catalog}", []);
+        $configured = $this->config->get("nvl-primitives.reference.{$catalog}", []);
 
         if (! is_array($configured)) {
             throw InvalidPrimitive::for("{$catalog} catalog", 'the catalog must be an array.');

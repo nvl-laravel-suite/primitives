@@ -40,7 +40,7 @@ final readonly class ValidPrimitive implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_scalar($value)) {
-            $fail('primitives::validation.invalid_primitive')->translate([
+            $fail('nvl-primitives::validation.invalid_primitive')->translate([
                 'primitive' => $this->label,
             ]);
 
@@ -50,7 +50,7 @@ final readonly class ValidPrimitive implements ValidationRule
         try {
             $this->primitiveClass::from((string) $value);
         } catch (InvalidPrimitive) {
-            $fail('primitives::validation.invalid_primitive')->translate([
+            $fail('nvl-primitives::validation.invalid_primitive')->translate([
                 'primitive' => $this->label,
             ]);
         }

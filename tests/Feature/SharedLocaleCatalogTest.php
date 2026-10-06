@@ -8,7 +8,7 @@ use Nvl\Support\Contracts\LocaleCatalog;
 use Nvl\Support\Locales\ApplicationLocaleCatalog;
 
 it('uses the shared catalog instead of a conflicting legacy primitives catalog', function (): void {
-    config(['primitives.locales.supported' => ['en']]);
+    config(['nvl-primitives.locales.supported' => ['en']]);
     $catalog = new ApplicationLocaleCatalog(new Repository(['app' => ['locale' => 'fr', 'fallback_locale' => 'de']]));
     app()->instance(LocaleCatalog::class, $catalog);
 
@@ -19,7 +19,7 @@ it('derives standalone primitive locale options from application locales', funct
     config([
         'app.locale' => 'BG_bg',
         'app.fallback_locale' => 'en',
-        'primitives.locales.supported' => null,
+        'nvl-primitives.locales.supported' => null,
     ]);
 
     expect(array_column(app(ReferenceCatalog::class)->locales(displayLocale: 'en'), 'code'))->toBe(['bg-BG', 'en']);

@@ -64,7 +64,7 @@ it('uses maintained numbering and iban registries', function (): void {
 });
 
 it('performs exact money arithmetic and configured conversion', function (): void {
-    config()->set('primitives.exchange_rates.rates', [
+    config()->set('nvl-primitives.exchange_rates.rates', [
         'EUR/USD' => '1.10',
     ]);
 
@@ -159,7 +159,7 @@ it('normalizes timezone, opaque identifier, address, and exact length measuremen
 });
 
 it('fails deterministically for explicitly stale configured exchange rates', function (): void {
-    config()->set('primitives.exchange_rates.rates', [
+    config()->set('nvl-primitives.exchange_rates.rates', [
         'EUR/USD' => [
             'rate' => '1.10',
             'as_of' => '2026-01-01T00:00:00Z',
@@ -176,7 +176,7 @@ it('fails deterministically for explicitly stale configured exchange rates', fun
 });
 
 it('round trips primitives through Eloquent casts', function (): void {
-    config()->set('primitives.phone.default_region', 'CH');
+    config()->set('nvl-primitives.phone.default_region', 'CH');
 
     $model = PrimitiveTestModel::query()->create([
         'email' => 'Person@EXAMPLE.com',
@@ -219,8 +219,8 @@ it('round trips primitives through Eloquent casts', function (): void {
 });
 
 it('exposes searchable ISO and application reference catalogs', function (): void {
-    config()->set('primitives.locales.supported', ['en', 'bg-BG']);
-    config()->set('primitives.reference.banks', [
+    config()->set('nvl-primitives.locales.supported', ['en', 'bg-BG']);
+    config()->set('nvl-primitives.reference.banks', [
         'UNCRBGSF' => ['label' => 'UniCredit Bulbank', 'country' => 'BG'],
     ]);
     $catalog = app(ReferenceCatalog::class);

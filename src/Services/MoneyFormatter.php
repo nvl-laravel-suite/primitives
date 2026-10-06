@@ -46,7 +46,7 @@ final readonly class MoneyFormatter
      */
     private function configuredLocale(): string
     {
-        $locale = $this->config->get('primitives.money.default_locale', 'en');
+        $locale = $this->config->get('nvl-primitives.money.default_locale', 'en');
 
         if (! is_string($locale)) {
             throw InvalidPrimitive::for('money format', 'the default locale must be a string.');

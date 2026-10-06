@@ -30,7 +30,7 @@ final readonly class ValidPhoneNumber implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_string($value)) {
-            $fail('primitives::validation.invalid_phone_number')->translate();
+            $fail('nvl-primitives::validation.invalid_phone_number')->translate();
 
             return;
         }
@@ -40,7 +40,7 @@ final readonly class ValidPhoneNumber implements ValidationRule
                 ? PhoneNumber::from($value)
                 : PhoneNumber::fromRegion($value, $this->region);
         } catch (InvalidPrimitive) {
-            $fail('primitives::validation.invalid_phone_number')->translate();
+            $fail('nvl-primitives::validation.invalid_phone_number')->translate();
         }
     }
 }

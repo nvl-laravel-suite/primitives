@@ -29,7 +29,7 @@ final readonly class PhoneNumber implements ScalarPrimitive
      */
     public static function from(string $value): static
     {
-        $region = config('primitives.phone.default_region');
+        $region = config('nvl-primitives.phone.default_region');
 
         return self::fromRegion($value, is_string($region) ? $region : null);
     }

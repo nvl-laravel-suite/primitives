@@ -11,11 +11,11 @@ See the [installation and publishing guide](https://github.com/nvl-laravel-suite
 
 | Item | Value |
 |---|---|
-| Installed through | `composer require nvl/primitives:^2.0` |
+| Installed through | `composer require nvl/primitives:^5.0` |
 | Module identifier | `nvl/primitives` |
 | PHP namespace | `Nvl\Primitives` |
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
-| Configuration | `config/primitives.php` |
+| Configuration | `config/nvl-primitives.php` |
 
 Immutable application value objects, exact money, Eloquent casts, validation rules, currency conversion, and standards-backed reference catalogs for Laravel 13.
 
@@ -43,10 +43,10 @@ It does not own users, settings, authorization, controllers, application routes,
 The package uses Brick Money/Math, Google's numbering metadata through `giggsey/libphonenumber-for-php`, the SWIFT-derived IBAN registry through `jschaedl/iban-validation`, and Symfony Intl data.
 
 ```bash
-composer require nvl/primitives:^2.0
-php artisan vendor:publish --tag=primitives-config
-php artisan vendor:publish --tag=primitives-translations
-php artisan vendor:publish --tag=primitives-skills
+composer require nvl/primitives:^5.0
+php artisan vendor:publish --tag=nvl-primitives-config
+php artisan vendor:publish --tag=nvl-primitives-translations
+php artisan vendor:publish --tag=nvl-primitives-skills
 ```
 
 The package has no migrations and works without a database.
@@ -186,7 +186,7 @@ $iban->masked();
 $iban->country();           // CountryCode("DE")
 ```
 
-National phone input requires an explicit region or `primitives.phone.default_region`. Prefer an explicit request-specific region.
+National phone input requires an explicit region or `nvl-primitives.phone.default_region`. Prefer an explicit request-specific region.
 
 ## Locale and ISO codes
 
@@ -204,7 +204,7 @@ $locale->regionCode(); // alpha country or numeric UN M49 region
 $locale->region();
 ```
 
-Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locale options come from Core’s `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales`, use Translatable’s adapter, or bind the contract in the host. `primitives.locales.supported` is deprecated for one major cycle and remains a standalone compatibility fallback only.
+Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locale options come from Core’s `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales`, use Translatable’s adapter, or bind the contract in the host. `nvl-primitives.locales.supported` is deprecated for one major cycle and remains a standalone compatibility fallback only.
 
 ## Exact quantities and structured values
 
@@ -321,3 +321,7 @@ See [UPGRADING.md](UPGRADING.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](
 ## License
 
 Released under the [MIT License](LICENSE).
+
+## Canonical configuration ownership
+
+Use `nvl-primitives` settings in `config/nvl-primitives.php` and canonical package environment names. Old generic roots are foreign unless an upgrading NVL host explicitly selects them in Core's default-off compatibility. Canonical false/null/empty values win; no old roots are populated or written back. Keep logical package/resource IDs unchanged. Review [Core's rename inventory and cache/worker cutover](https://github.com/nvl-laravel-suite/core/blob/main/UPGRADING.md#major-5-canonical-configuration-and-environment).

@@ -21,8 +21,8 @@ Changed canonical serialization is a data migration and must be handled by the c
 
 ## Shared locale catalog cutover
 
-`primitives.locales` is deprecated for one major cycle. `ReferenceCatalog::locales()` now reads `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales` or bind the contract; standalone Core/Primitives usage requires no Translatable installation. Without an explicit catalog, supported options derive from valid application locale and fallback values.
+`nvl-primitives.locales` is deprecated for one major cycle. `ReferenceCatalog::locales()` now reads `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales` or bind the contract; standalone Core/Primitives usage requires no Translatable installation. Without an explicit catalog, supported options derive from valid application locale and fallback values.
 
-An explicit legacy `primitives.locales.supported` list is translated only when the standalone default has no canonical selection. Translatable's adapter or a host-bound catalog takes precedence. Run `php artisan nvl:doctor` to find deprecated configuration and conflicts before removing the old list.
+An explicit legacy `nvl-primitives.locales.supported` list is translated only when the standalone default has no canonical selection. Translatable's adapter or a host-bound catalog takes precedence. Run `php artisan nvl:doctor` to find deprecated configuration and conflicts before removing the old list.
 
 Primitives retains its stricter language/script/region/variant validation and uses Core's shared separator and casing normalization. No stored locale values are rewritten. Rebuild configuration caches and restart workers after configuration changes.

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
+use Nvl\Support\Config\PackageEnvironment;
 
 return [
     /*
@@ -15,7 +16,7 @@ return [
     |
     */
     'money' => [
-        'default_locale' => env('PRIMITIVES_DEFAULT_LOCALE', 'en'),
+        'default_locale' => PackageEnvironment::get('NVL_PRIMITIVES_DEFAULT_LOCALE', 'en'),
     ],
 
     /*
@@ -28,7 +29,7 @@ return [
     |
     */
     'phone' => [
-        'default_region' => env('PRIMITIVES_PHONE_REGION'),
+        'default_region' => PackageEnvironment::get('NVL_PRIMITIVES_PHONE_REGION'),
     ],
 
     /*

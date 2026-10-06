@@ -168,7 +168,7 @@ it('allows international addresses without a postal code', function (): void {
 });
 
 it('uses the configured phone region consistently in fallible parsing', function (): void {
-    config()->set('primitives.phone.default_region', 'CH');
+    config()->set('nvl-primitives.phone.default_region', 'CH');
 
     expect((string) PhoneNumber::tryFrom('044 668 18 00'))->toBe('+41446681800');
 });
