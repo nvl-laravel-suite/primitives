@@ -36,7 +36,7 @@ See the [installation and publishing guide](https://github.com/nvl-laravel-suite
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
 | Configuration | `config/nvl-primitives.php` |
 
-Immutable application value objects, exact money, Eloquent casts, validation rules, currency conversion, and standards-backed reference catalogs for Laravel 13.
+Immutable application value objects, exact money, Eloquent casts, validation rules, currency conversion, and standards-backed reference catalogs for Laravel 12–13.
 
 ## Purpose and boundaries
 
@@ -55,7 +55,7 @@ It does not own users, settings, authorization, controllers, application routes,
 ## Requirements and installation
 
 - PHP 8.4+
-- Laravel 13
+- Laravel 12–13
 - `ext-mbstring`, `ext-json`, and `ext-ctype`
 - optional `ext-intl` for locale-aware money formatting
 
@@ -333,7 +333,7 @@ composer install
 composer quality
 ```
 
-The package gate runs Pint, PHPStan at maximum strictness, and isolated Testbench/Pest tests. Maintainer CI additionally runs dependency analysis, Composer audit, integration tests, and Laravel 13 gates.
+The package gate runs Pint, PHPStan at maximum strictness, and isolated Testbench/Pest tests. Maintainer CI additionally runs dependency analysis, Composer audit, integration tests, and Laravel 12–13 gates.
 
 See [UPGRADING.md](UPGRADING.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [CHANGELOG.md](CHANGELOG.md).
 
