@@ -5,6 +5,13 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [6.0.0] - 2026-10-20
+
+### Changed
+
+- Remain independent of Auth, Ownership and Tenancy while aligning the shared Core dependency with the coordinated major.
+- Align required/development NVL peers on `^6.0`, optional peer conflicts on major 6, and `dev-main` on `6.x-dev`. Review [UPGRADING.md](UPGRADING.md) before rollout.
+
 ## [5.0.1] - 2026-10-08
 
 ### Changed

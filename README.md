@@ -3,12 +3,12 @@
 ## Quickstart
 
 ```sh
-composer require nvl/primitives:^5.0
+composer require nvl/primitives:^6.0
 php artisan nvl:install primitives --dry-run
 php artisan nvl:install primitives
 ```
 
-Required NVL dependencies: `nvl/core` (`^5.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
+Required NVL dependencies: `nvl/core` (`^6.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
 Review the published common config, select one migration owner, and run schema preflight before existing-table upgrades. The installer does not enable features or run migrations. Follow the detailed installation and capability sections below before invoking a storage/provider operation.
 
 ```php
@@ -30,7 +30,7 @@ See the [installation and publishing guide](https://github.com/nvl-laravel-suite
 
 | Item | Value |
 |---|---|
-| Installed through | `composer require nvl/primitives:^5.0` |
+| Installed through | `composer require nvl/primitives:^6.0` |
 | Module identifier | `nvl/primitives` |
 | PHP namespace | `Nvl\Primitives` |
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
@@ -62,7 +62,7 @@ It does not own users, settings, authorization, controllers, application routes,
 The package uses Brick Money/Math, Google's numbering metadata through `giggsey/libphonenumber-for-php`, the SWIFT-derived IBAN registry through `jschaedl/iban-validation`, and Symfony Intl data.
 
 ```bash
-composer require nvl/primitives:^5.0
+composer require nvl/primitives:^6.0
 php artisan vendor:publish --tag=nvl-primitives-config
 php artisan vendor:publish --tag=nvl-primitives-translations
 php artisan vendor:publish --tag=nvl-primitives-skills
