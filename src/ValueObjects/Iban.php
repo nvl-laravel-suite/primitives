@@ -10,6 +10,7 @@ use Nvl\Primitives\Concerns\CastsAsScalar;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 
 /**
  * Valid ISO 13616 International Bank Account Number.
@@ -26,6 +27,7 @@ final readonly class Iban implements ScalarPrimitive
 
     public static function from(string $value): static
     {
+        OptionalLibraries::iban();
         $iban = new BaseIban($value);
 
         if (! (new Validator)->validate($iban)) {

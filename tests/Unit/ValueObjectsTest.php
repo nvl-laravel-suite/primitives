@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-use Nvl\Primitives\Data\CoordinatesData;
-use Nvl\Primitives\Data\LengthData;
-use Nvl\Primitives\Data\PostalAddressData;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
 use Nvl\Primitives\Support\BrickMoneyCompatibility;
@@ -141,7 +138,8 @@ it('names length explicitly and requires explicit conversion precision', functio
     $length = Length::from('12', 'in');
 
     expect($length->in('cm', 2, BrickMathCompatibility::unnecessary()))->toBe('30.48')
-        ->and(LengthData::fromLength($length)->toArray())->toBe([
+        ->and(Length::fromArray($length->toArray())->equals($length))->toBeTrue()
+        ->and($length->toArray())->toBe([
             'value' => '0.3048',
             'unit' => 'm',
         ]);
@@ -274,14 +272,16 @@ it('exposes complete coordinate and address contracts', function (): void {
         ->and((string) $coordinates)->toBe('42.6977000,23.3219000')
         ->and($coordinates->googleMapsUrl()->host())->toBe('www.google.com')
         ->and($coordinates->equals(Coordinates::from('0', '0')))->toBeFalse()
-        ->and(CoordinatesData::fromCoordinates($coordinates)->toArray())->toBe([
+        ->and(Coordinates::fromArray($coordinates->toArray())->toArray())->toBe([
             'latitude' => '42.6977000',
             'longitude' => '23.3219000',
         ])
+        ->and(Coordinates::fromArray($coordinates->toArray())->equals($coordinates))->toBeTrue()
         ->and($address->jsonSerialize())->toBe($address->toArray())
         ->and((string) $address)->toBe('1 Main Street, Floor 2, 1000 Sofia, Sofia City, BG')
         ->and($address->equals(PostalAddress::fromArray($address->toArray())))->toBeTrue()
-        ->and(PostalAddressData::fromAddress($address)->toArray())->toBe($address->toArray());
+        ->and(PostalAddress::fromArray($address->toArray())->toArray())->toBe($address->toArray());
+    expect(PostalAddress::fromArray($address->toArray())->equals($address))->toBeTrue();
 });
 
 it('rejects malformed coordinate and address payloads', function (): void {

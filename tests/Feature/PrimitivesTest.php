@@ -3,8 +3,6 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Validator;
-use Nvl\Primitives\Data\LengthData;
-use Nvl\Primitives\Data\MoneyData;
 use Nvl\Primitives\Exceptions\ExchangeRateStale;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Rules\ValidPhoneNumber;
@@ -81,11 +79,8 @@ it('performs exact money arithmetic and configured conversion', function (): voi
         ->and($price->multiply(3)->amount())->toBe('59.97')
         ->and($converted->amount())->toBe('26.39')
         ->and($converted->currency()->storageValue())->toBe('USD')
-        ->and(MoneyData::fromMoney($price)->toArray())->toMatchArray([
-            'amount' => '19.99',
-            'minor' => '1999',
-            'currency' => 'EUR',
-        ]);
+        ->and(Money::fromArray($price->toArray())->equals($price))->toBeTrue()
+        ->and($price->toArray())->toBe(['minor' => '1999', 'currency' => 'EUR']);
 
     expect(fn () => Money::of('1.005', 'EUR'))->toThrow(InvalidPrimitive::class)
         ->and(Money::of('1.005', 'EUR', BrickMathCompatibility::halfUp())->amount())->toBe('1.01');
@@ -149,7 +144,7 @@ it('normalizes timezone, opaque identifier, address, and exact length measuremen
         ->toBe('01ARZ3NDEKTSV4RRFFQ69G5FAV')
         ->and((string) Identifier::from(42))->toBe('42')
         ->and($length->in('cm', 2, BrickMathCompatibility::unnecessary()))->toBe('30.48')
-        ->and(LengthData::fromLength($length)->toArray())
+        ->and(Length::fromArray($length->toArray())->toArray())
         ->toBe(['value' => '0.3048', 'unit' => 'm'])
         ->and($address->line1)->toBe('1 Main Street')
         ->and($address->line2)->toBeNull()
@@ -219,17 +214,18 @@ it('round trips primitives through Eloquent casts', function (): void {
 });
 
 it('exposes searchable ISO and application reference catalogs', function (): void {
-    config()->set('nvl-primitives.locales.supported', ['en', 'bg-BG']);
+    config()->set('nvl-core.locales.supported', ['en', 'bg-BG']);
     config()->set('nvl-primitives.reference.banks', [
         'UNCRBGSF' => ['label' => 'UniCredit Bulbank', 'country' => 'BG'],
     ]);
     $catalog = app(ReferenceCatalog::class);
 
     expect($catalog->countries('Bulg', 'en', 5))->toHaveCount(1)
-        ->and($catalog->countries('Bulg', 'en', 5)[0]->code)->toBe('BG')
-        ->and($catalog->currencies('Euro', 'en', 5)[0]->code)->toBe('EUR')
-        ->and($catalog->locales('Bulgarian', 'en', 5)[0]->code)->toBe('bg-BG')
-        ->and($catalog->banks('credit')[0]->metadata['country'])->toBe('BG');
+        ->and(array_keys($catalog->countries('Bulg', 'en', 5)[0]))->toBe(['code', 'label', 'metadata'])
+        ->and($catalog->countries('Bulg', 'en', 5)[0]['code'])->toBe('BG')
+        ->and($catalog->currencies('Euro', 'en', 5)[0]['code'])->toBe('EUR')
+        ->and($catalog->locales('Bulgarian', 'en', 5)[0]['code'])->toBe('bg-BG')
+        ->and($catalog->banks('credit')[0]['metadata']['country'])->toBe('BG');
 });
 
 it('integrates primitives with Laravel validation', function (): void {

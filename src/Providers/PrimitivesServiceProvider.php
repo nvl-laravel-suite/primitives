@@ -6,7 +6,6 @@ namespace Nvl\Primitives\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
-use Nvl\Data\Services\TypeScriptSourceRegistry;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
 use Nvl\Support\Globals\GlobalNames;
@@ -14,7 +13,7 @@ use Nvl\Support\Traits\MergesPackageConfiguration;
 use Nvl\Support\Traits\RegistersNamespacedResources;
 
 /**
- * Registers primitive configuration, contracts, type sources, and package resources.
+ * Registers primitive configuration, contracts, and package resources.
  */
 final class PrimitivesServiceProvider extends ServiceProvider
 {
@@ -49,23 +48,22 @@ final class PrimitivesServiceProvider extends ServiceProvider
     }
 
     /**
-     * Publish configuration and agent guidance, and register generated types.
+     * Publish configuration and agent guidance.
      */
-    public function boot(TypeScriptSourceRegistry $typeScriptSources): void
+    public function boot(): void
     {
-        $typeScriptSources->register(__DIR__.'/..', 'nvl/primitives');
         $this->app->make(GlobalNames::class)->translations('primitives', __DIR__.'/../../lang', $this->app->make('translation.loader'));
 
         $this->publishes([
             __DIR__.'/../../config/nvl-primitives.php' => config_path('nvl-primitives.php'),
-        ], 'primitives-config');
+        ], 'nvl-primitives-config');
 
         $this->publishes([
             __DIR__.'/../../lang' => lang_path('vendor/nvl-primitives'),
-        ], 'primitives-translations');
+        ], 'nvl-primitives-translations');
 
         $this->publishes([
             __DIR__.'/../../resources/boost/skills' => base_path('.agents/skills'),
-        ], 'primitives-skills');
+        ], 'nvl-primitives-skills');
     }
 }

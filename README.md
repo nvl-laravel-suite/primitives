@@ -36,7 +36,7 @@ See the [installation and publishing guide](https://github.com/nvl-laravel-suite
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
 | Configuration | `config/nvl-primitives.php` |
 
-Immutable application value objects, exact money, Eloquent casts, validation rules, currency conversion, and standards-backed reference catalogs for Laravel 12–13.
+Immutable application value objects, exact money, Eloquent casts, validation rules, currency conversion, and standards-backed reference catalogs for Laravel 13.
 
 ## Purpose and boundaries
 
@@ -48,18 +48,26 @@ Primitives replaces the reusable parts of a traditional application “Core” m
 - international phone and IBAN parsing backed by maintained registries;
 - current ISO country, currency, and language catalogs;
 - application locale, city, and bank option boundaries;
-- Spatie Data DTOs and generated TypeScript contracts.
+- native scalar, array, and domain-value contracts for application-owned projections.
 
 It does not own users, settings, authorization, controllers, application routes, UI components, live exchange-rate HTTP clients, or a global cities/banks database.
 
 ## Requirements and installation
 
 - PHP 8.4+
-- Laravel 12–13
+- Laravel 13
 - `ext-mbstring`, `ext-json`, and `ext-ctype`
 - optional `ext-intl` for locale-aware money formatting
 
-The package uses Brick Money/Math, Google's numbering metadata through `giggsey/libphonenumber-for-php`, the SWIFT-derived IBAN registry through `jschaedl/iban-validation`, and Symfony Intl data.
+Brick Money/Math and Carbon are required. Install the optional registries for the capabilities your application calls:
+
+```bash
+composer require giggsey/libphonenumber-for-php:^9.0 jschaedl/iban-validation:^2.7 symfony/intl:'^7.0 || ^8.0'
+# On PHP without ext-intl, also install:
+composer require symfony/polyfill-intl-icu:^1.33
+```
+
+The package boots without these registries. Calling a dependent feature without its library throws an exception naming the package to install.
 
 ```bash
 composer require nvl/primitives:^6.0
@@ -223,7 +231,7 @@ $locale->regionCode(); // alpha country or numeric UN M49 region
 $locale->region();
 ```
 
-Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locale options come from Core’s `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales`, use Translatable’s adapter, or bind the contract in the host. `nvl-primitives.locales.supported` is deprecated for one major cycle and remains a standalone compatibility fallback only.
+Locale tags support a language followed by an optional script, optional alpha/numeric region, and valid variant subtags. Extensions and private-use subtags are intentionally outside the package contract. Application-supported locale options come from Core’s `Nvl\Support\Contracts\LocaleCatalog`. Configure `nvl-core.locales` or bind that contract in the host.
 
 ## Exact quantities and structured values
 
@@ -273,13 +281,14 @@ Validation messages ship in English and Bulgarian and use Laravel's translation 
 
 ## Reference catalogs
 
-`ReferenceCatalog` returns `ReferenceOption` DTOs:
+`ReferenceCatalog` returns bounded arrays with `code`, `label`, and scalar `metadata` keys:
 
 ```php
 $countries = $catalog->countries('Bulg', 'en', 20);
 $currencies = $catalog->currencies('Euro', 'en');
 $languages = $catalog->languages('Bulgarian', 'en');
 $locales = $catalog->locales('bg', 'en');
+$countryCode = $countries[0]['code'];
 ```
 
 Countries, currencies, and languages come from installed Symfony Intl standards data. Locale labels include script and region qualifiers so supported variants remain distinguishable. Cities and banks are deployment-specific, so configure small application lists:
@@ -302,18 +311,11 @@ Countries, currencies, and languages come from installed Symfony Intl standards 
 ],
 ```
 
-Malformed catalog entries and limits outside `1..250` fail immediately. Large or dynamic datasets should use an application service/repository and the same `ReferenceOption` response shape. Primitives intentionally avoids mandatory reference tables, seeders, and unauthenticated routes.
+Malformed catalog entries and limits outside `1..250` fail immediately. Large or dynamic datasets belong in an application service or repository. Primitives intentionally avoids mandatory reference tables and seeders.
 
-## Spatie Data and TypeScript
+## Application projections
 
-The package registers with Core's Data provider. Public contracts include `MoneyData`, `LengthData`, `CoordinatesData`, `PostalAddressData`, and `ReferenceOption`.
-
-```bash
-php artisan nvl:data:types:generate
-php artisan nvl:data:types:check
-```
-
-Expose DTOs rather than Brick, libphonenumber, or IBAN vendor objects in JSON APIs.
+Use `Money::toArray()`, `Length::toArray()`, `Coordinates::toArray()`, and `PostalAddress::toArray()` at application boundaries. The application owns any DTOs, API resources, and generated TypeScript types. Keep vendor library objects out of JSON responses.
 
 ## Adoption
 
@@ -333,15 +335,13 @@ composer install
 composer quality
 ```
 
-The package gate runs Pint, PHPStan at maximum strictness, and isolated Testbench/Pest tests. Local Dagger verification additionally runs dependency analysis, Composer audit, integration tests and PHP 8.4/Laravel 13 release checks; Laravel 12 and PHP 8.5 require separate compatibility evidence.
+The package gate runs Pint, PHPStan at maximum strictness, and isolated Testbench/Pest tests. Local Dagger verification additionally runs dependency analysis, Composer audit, integration tests and PHP 8.4/Laravel 13 release checks.
 
 See [UPGRADING.md](UPGRADING.md), [SECURITY.md](SECURITY.md), [CONTRIBUTING.md](CONTRIBUTING.md), and [CHANGELOG.md](CHANGELOG.md).
 
 ## Supported PHP usage
 
-The source `@api` declarations identify supported workflows, extension contracts, and value types. Public members marked `@internal` and untagged implementation types remain package-owned. Concrete Actions retain their existing constructors, qualifiers, and `execute()` signatures.
-
-A package model returned or accepted by a public workflow is an identity/result handle. Use its declared type and `getKey()`, `getKeyName()`, `getMorphClass()`, `getRouteKey()`, `getRouteKeyName()`, `is()`, `isNot()`, and `relationLoaded()`. Read only explicitly declared in-memory `@nvl-consumer-read` fields; ordinary model PHPDocs and fillable attributes do not grant consumer reads. Obtain display projections through public reads. Persistence, additional model queries, relation access/loading, and generic model serialization are outside this contract. Host-model queries remain available, while traversal or aggregates of package capability relations require the package public reader or authorized adapter.
+The source `@api` declarations identify supported services, extension contracts, and value types. Public members marked `@internal` and untagged implementation types remain package-owned.
 
 ## Testing your app
 

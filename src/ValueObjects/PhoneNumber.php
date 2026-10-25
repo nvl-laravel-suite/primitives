@@ -12,6 +12,7 @@ use Nvl\Primitives\Concerns\CastsAsScalar;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 
 /**
  * Valid international telephone number persisted in E.164 form.
@@ -41,6 +42,7 @@ final readonly class PhoneNumber implements ScalarPrimitive
      */
     public static function fromRegion(string $value, ?string $region): self
     {
+        OptionalLibraries::phoneNumbers();
         $value = trim($value);
         $region = $region !== null ? mb_strtoupper(trim($region)) : null;
         $phoneUtil = PhoneNumberUtil::getInstance();

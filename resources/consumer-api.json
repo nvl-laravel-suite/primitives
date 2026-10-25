@@ -56,111 +56,6 @@
             "properties": [],
             "constants": []
         },
-        "Nvl\\Primitives\\Data\\CoordinatesData": {
-            "kind": "class",
-            "file": "src/Data/CoordinatesData.php",
-            "methods": [
-                "__construct",
-                "fromCoordinates",
-                "scopedRules",
-                "toArray",
-                "toModel",
-                "toModelFiltered",
-                "toModelPatch",
-                "translatedAttributes",
-                "translatedMessages"
-            ],
-            "properties": [
-                "latitude",
-                "longitude"
-            ],
-            "constants": []
-        },
-        "Nvl\\Primitives\\Data\\LengthData": {
-            "kind": "class",
-            "file": "src/Data/LengthData.php",
-            "methods": [
-                "__construct",
-                "fromLength",
-                "scopedRules",
-                "toArray",
-                "toModel",
-                "toModelFiltered",
-                "toModelPatch",
-                "translatedAttributes",
-                "translatedMessages"
-            ],
-            "properties": [
-                "unit",
-                "value"
-            ],
-            "constants": []
-        },
-        "Nvl\\Primitives\\Data\\MoneyData": {
-            "kind": "class",
-            "file": "src/Data/MoneyData.php",
-            "methods": [
-                "__construct",
-                "fromMoney",
-                "scopedRules",
-                "toArray",
-                "toModel",
-                "toModelFiltered",
-                "toModelPatch",
-                "translatedAttributes",
-                "translatedMessages"
-            ],
-            "properties": [
-                "amount",
-                "currency",
-                "minor"
-            ],
-            "constants": []
-        },
-        "Nvl\\Primitives\\Data\\PostalAddressData": {
-            "kind": "class",
-            "file": "src/Data/PostalAddressData.php",
-            "methods": [
-                "__construct",
-                "fromAddress",
-                "scopedRules",
-                "toArray",
-                "toModel",
-                "toModelFiltered",
-                "toModelPatch",
-                "translatedAttributes",
-                "translatedMessages"
-            ],
-            "properties": [
-                "administrativeArea",
-                "country",
-                "line1",
-                "line2",
-                "locality",
-                "postalCode"
-            ],
-            "constants": []
-        },
-        "Nvl\\Primitives\\Data\\ReferenceOption": {
-            "kind": "class",
-            "file": "src/Data/ReferenceOption.php",
-            "methods": [
-                "__construct",
-                "scopedRules",
-                "toArray",
-                "toModel",
-                "toModelFiltered",
-                "toModelPatch",
-                "translatedAttributes",
-                "translatedMessages"
-            ],
-            "properties": [
-                "code",
-                "label",
-                "metadata"
-            ],
-            "constants": []
-        },
         "Nvl\\Primitives\\Enums\\PrimitivesResponseCode": {
             "kind": "enum",
             "file": "src/Enums/PrimitivesResponseCode.php",
@@ -183,14 +78,7 @@
             "kind": "class",
             "file": "src/Exceptions/ExchangeRateStale.php",
             "methods": [
-                "forPair",
-                "package",
-                "publicContext",
-                "responseCode",
-                "responseHeaders",
-                "suggestedStatus",
-                "translationKey",
-                "translationParameters"
+                "forPair"
             ],
             "properties": [],
             "constants": []
@@ -199,14 +87,7 @@
             "kind": "class",
             "file": "src/Exceptions/ExchangeRateUnavailable.php",
             "methods": [
-                "between",
-                "package",
-                "publicContext",
-                "responseCode",
-                "responseHeaders",
-                "suggestedStatus",
-                "translationKey",
-                "translationParameters"
+                "between"
             ],
             "properties": [],
             "constants": []
@@ -223,15 +104,7 @@
         "Nvl\\Primitives\\Exceptions\\PrimitivesException": {
             "kind": "class",
             "file": "src/Exceptions/PrimitivesException.php",
-            "methods": [
-                "package",
-                "publicContext",
-                "responseCode",
-                "responseHeaders",
-                "suggestedStatus",
-                "translationKey",
-                "translationParameters"
-            ],
+            "methods": [],
             "properties": [],
             "constants": []
         },

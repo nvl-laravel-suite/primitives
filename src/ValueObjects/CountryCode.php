@@ -8,6 +8,7 @@ use Nvl\Primitives\Concerns\CastsAsScalar;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 use Symfony\Component\Intl\Countries;
 
 /**
@@ -25,6 +26,7 @@ final readonly class CountryCode implements ScalarPrimitive
 
     public static function from(string $value): static
     {
+        OptionalLibraries::intl();
         $value = mb_strtoupper(trim($value));
 
         if (! Countries::exists($value)) {

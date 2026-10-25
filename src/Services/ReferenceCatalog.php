@@ -6,8 +6,8 @@ namespace Nvl\Primitives\Services;
 
 use Illuminate\Contracts\Config\Repository;
 use InvalidArgumentException;
-use Nvl\Primitives\Data\ReferenceOption;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 use Nvl\Primitives\ValueObjects\LocaleCode;
 use Nvl\Support\Contracts\LocaleCatalog;
 use Symfony\Component\Intl\Countries;
@@ -33,22 +33,19 @@ final readonly class ReferenceCatalog
     /**
      * Return country options from the installed ISO catalog.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function countries(
         ?string $search = null,
         ?string $displayLocale = null,
         int $limit = 50,
     ): array {
+        OptionalLibraries::intl();
         $options = [];
         $displayLocale = $this->displayLocale($displayLocale);
 
         foreach (Countries::getNames($displayLocale) as $code => $label) {
-            $options[] = new ReferenceOption(
-                code: $code,
-                label: $label,
-                metadata: [],
-            );
+            $options[] = ['code' => $code, 'label' => $label, 'metadata' => []];
         }
 
         return $this->filter($options, $search, $limit);
@@ -57,25 +54,26 @@ final readonly class ReferenceCatalog
     /**
      * Return currency options with symbol and fraction metadata.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function currencies(
         ?string $search = null,
         ?string $displayLocale = null,
         int $limit = 50,
     ): array {
+        OptionalLibraries::intl();
         $options = [];
         $displayLocale = $this->displayLocale($displayLocale);
 
         foreach (Currencies::getNames($displayLocale) as $code => $label) {
-            $options[] = new ReferenceOption(
-                code: $code,
-                label: $label,
-                metadata: [
+            $options[] = [
+                'code' => $code,
+                'label' => $label,
+                'metadata' => [
                     'symbol' => Currencies::getSymbol($code, $displayLocale),
                     'fractionDigits' => Currencies::getFractionDigits($code),
                 ],
-            );
+            ];
         }
 
         return $this->filter($options, $search, $limit);
@@ -84,22 +82,19 @@ final readonly class ReferenceCatalog
     /**
      * Return language options from the installed ISO catalog.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function languages(
         ?string $search = null,
         ?string $displayLocale = null,
         int $limit = 50,
     ): array {
+        OptionalLibraries::intl();
         $options = [];
         $displayLocale = $this->displayLocale($displayLocale);
 
         foreach (Languages::getNames($displayLocale) as $code => $label) {
-            $options[] = new ReferenceOption(
-                code: $code,
-                label: $label,
-                metadata: [],
-            );
+            $options[] = ['code' => $code, 'label' => $label, 'metadata' => []];
         }
 
         return $this->filter($options, $search, $limit);
@@ -108,13 +103,14 @@ final readonly class ReferenceCatalog
     /**
      * Return application-supported locale options with distinguishing qualifiers.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function locales(
         ?string $search = null,
         ?string $displayLocale = null,
         int $limit = 50,
     ): array {
+        OptionalLibraries::intl();
         try {
             $configured = $this->locales->supported();
         } catch (InvalidArgumentException $exception) {
@@ -146,14 +142,14 @@ final readonly class ReferenceCatalog
                 $label .= ' ('.implode(', ', $qualifiers).')';
             }
 
-            $options[] = new ReferenceOption(
-                code: (string) $code,
-                label: $label,
-                metadata: array_filter([
+            $options[] = [
+                'code' => (string) $code,
+                'label' => $label,
+                'metadata' => array_filter([
                     'script' => $script,
                     'region' => $region,
                 ], static fn (?string $value): bool => $value !== null),
-            );
+            ];
         }
 
         return $this->filter($options, $search, $limit);
@@ -162,7 +158,7 @@ final readonly class ReferenceCatalog
     /**
      * Return configured deployment-specific city options.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function cities(?string $search = null, int $limit = 50): array
     {
@@ -172,7 +168,7 @@ final readonly class ReferenceCatalog
     /**
      * Return configured deployment-specific bank options.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     public function banks(?string $search = null, int $limit = 50): array
     {
@@ -182,7 +178,7 @@ final readonly class ReferenceCatalog
     /**
      * Return a strictly validated configured catalog.
      *
-     * @return list<ReferenceOption>
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     private function configured(string $catalog, ?string $search, int $limit): array
     {
@@ -229,7 +225,7 @@ final readonly class ReferenceCatalog
             }
 
             /** @var array<string, bool|int|float|string|null> $metadata */
-            $options[] = new ReferenceOption(trim($code), trim($definition['label']), $metadata);
+            $options[] = ['code' => trim($code), 'label' => trim($definition['label']), 'metadata' => $metadata];
         }
 
         return $this->filter($options, $search, $limit);
@@ -238,8 +234,8 @@ final readonly class ReferenceCatalog
     /**
      * Filter and limit reference options deterministically.
      *
-     * @param  list<ReferenceOption>  $options
-     * @return list<ReferenceOption>
+     * @param  list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>  $options
+     * @return list<array{code: string, label: string, metadata: array<string, bool|int|float|string|null>}>
      */
     private function filter(array $options, ?string $search, int $limit): array
     {
@@ -250,9 +246,9 @@ final readonly class ReferenceCatalog
         $needle = mb_strtolower(trim($search ?? ''));
         $filtered = array_filter(
             $options,
-            static fn (ReferenceOption $option): bool => $needle === ''
-                || str_contains(mb_strtolower($option->code), $needle)
-                || str_contains(mb_strtolower($option->label), $needle),
+            static fn (array $option): bool => $needle === ''
+                || str_contains(mb_strtolower($option['code']), $needle)
+                || str_contains(mb_strtolower($option['label']), $needle),
         );
 
         return array_slice(array_values($filtered), 0, $limit);

@@ -8,6 +8,7 @@ use Nvl\Primitives\Concerns\CastsAsScalar;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 use Nvl\Support\Locales\LocaleCode as SharedLocaleCode;
 use Symfony\Component\Intl\Countries;
 use Symfony\Component\Intl\Languages;
@@ -31,6 +32,7 @@ final readonly class LocaleCode implements ScalarPrimitive
      */
     public static function from(string $value): static
     {
+        OptionalLibraries::intl();
         $value = SharedLocaleCode::normalize($value);
         $parts = explode('-', $value);
 

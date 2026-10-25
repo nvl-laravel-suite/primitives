@@ -2,9 +2,7 @@
     "schema_version": 1,
     "configs": {
         "nvl-primitives": {
-            "common": [
-                "locales.supported"
-            ],
+            "common": [],
             "advanced": [
                 "exchange_rates.implementation",
                 "exchange_rates.rates",

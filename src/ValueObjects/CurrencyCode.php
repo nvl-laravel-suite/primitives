@@ -10,6 +10,7 @@ use Nvl\Primitives\Concerns\CastsAsScalar;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\OptionalLibraries;
 use Symfony\Component\Intl\Currencies;
 
 /**
@@ -49,16 +50,22 @@ final readonly class CurrencyCode implements ScalarPrimitive
 
     public function name(?string $displayLocale = null): string
     {
+        OptionalLibraries::intl();
+
         return Currencies::getName($this->value, $displayLocale);
     }
 
     public function symbol(?string $displayLocale = null): string
     {
+        OptionalLibraries::intl();
+
         return Currencies::getSymbol($this->value, $displayLocale);
     }
 
     public function fractionDigits(): int
     {
+        OptionalLibraries::intl();
+
         return Currencies::getFractionDigits($this->value);
     }
 

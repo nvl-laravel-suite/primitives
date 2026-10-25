@@ -111,7 +111,7 @@ it('formats money through an injected service with a deterministic fallback', fu
 });
 
 it('builds distinct locale labels and fails fast on invalid reference config', function (): void {
-    config()->set('nvl-primitives.locales.supported', ['en', 'en-US', 'zh-Hans-CN', 'es-419']);
+    config()->set('nvl-core.locales.supported', ['en', 'en-US', 'zh-Hans-CN', 'es-419']);
     $catalog = app(ReferenceCatalog::class);
 
     expect(array_column($catalog->locales(displayLocale: 'en'), 'label'))->toBe([
@@ -119,7 +119,7 @@ it('builds distinct locale labels and fails fast on invalid reference config', f
         'English (United States)',
         'Chinese (Simplified, China)',
         'Spanish (419)',
-    ])->and($catalog->locales(displayLocale: 'en')[2]->metadata)->toBe([
+    ])->and($catalog->locales(displayLocale: 'en')[2]['metadata'])->toBe([
         'script' => 'Hans',
         'region' => 'CN',
     ])->and(fn () => $catalog->countries(limit: 0))->toThrow(InvalidPrimitive::class);
@@ -224,7 +224,7 @@ it('covers converter and formatter configuration boundaries', function (): void 
 
 it('covers every reference catalog family and malformed configuration', function (): void {
     $catalog = app(ReferenceCatalog::class);
-    config()->set('nvl-primitives.locales.supported', ['en']);
+    config()->set('nvl-core.locales.supported', ['en']);
     config()->set('nvl-primitives.reference.cities', [
         'sofia-bg' => [
             'label' => 'Sofia',
@@ -234,19 +234,20 @@ it('covers every reference catalog family and malformed configuration', function
         ],
     ]);
 
-    expect($catalog->countries('BG', 'en', 5)[0]->code)->toBe('BG')
-        ->and($catalog->currencies('EUR', 'en', 5)[0]->code)->toBe('EUR')
-        ->and($catalog->languages('Bulgarian', 'en', 5)[0]->code)->toBe('bg')
-        ->and($catalog->cities('sofia')[0]->metadata)->toBe([
+    expect($catalog->countries('BG', 'en', 5)[0]['code'])->toBe('BG')
+        ->and($catalog->currencies('EUR', 'en', 5)[0]['metadata']['fractionDigits'])->toBe(2)
+        ->and($catalog->currencies('EUR', 'en', 5)[0]['code'])->toBe('EUR')
+        ->and($catalog->languages('Bulgarian', 'en', 5)[0]['code'])->toBe('bg')
+        ->and($catalog->cities('sofia')[0]['metadata'])->toBe([
             'country' => 'BG',
             'population' => 1_200_000,
             'capital' => true,
         ]);
 
-    config()->set('nvl-primitives.locales.supported', 'invalid');
+    config()->set('nvl-core.locales.supported', 'invalid');
     expect(fn () => $catalog->locales())->toThrow(InvalidPrimitive::class);
 
-    config()->set('nvl-primitives.locales.supported', [42]);
+    config()->set('nvl-core.locales.supported', [42]);
     expect(fn () => $catalog->locales())->toThrow(InvalidPrimitive::class);
 
     config()->set('nvl-primitives.reference.cities', 'invalid');

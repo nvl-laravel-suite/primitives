@@ -20,27 +20,28 @@
         "ext-filter": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "giggsey/libphonenumber-for-php": "^9.0",
-        "jschaedl/iban-validation": "^2.7",
-        "laravel/framework": "^12.0 || ^13.0",
+        "laravel/framework": "^13.0",
         "nesbot/carbon": "^2.72 || ^3.0",
-        "nvl/core": "^6.0",
-        "spatie/laravel-data": "^4.23",
-        "symfony/intl": "^7.0 || ^8.0",
-        "symfony/polyfill-intl-icu": "^1.33"
+        "nvl/core": "^6.0"
     },
     "require-dev": {
+        "giggsey/libphonenumber-for-php": "^9.0",
+        "jschaedl/iban-validation": "^2.7",
         "larastan/larastan": "^3.10",
         "laravel/pint": "^1.27",
         "mockery/mockery": "^1.6",
-        "orchestra/testbench": "^10.0 || ^11.0",
+        "orchestra/testbench": "^11.0",
         "pestphp/pest": "^4.0",
         "pestphp/pest-plugin-laravel": "^4.0",
-        "spatie/typescript-transformer": "^3.3"
+        "symfony/intl": "^7.0 || ^8.0",
+        "symfony/polyfill-intl-icu": "^1.33"
     },
     "suggest": {
         "ext-intl": "Enables locale-aware monetary formatting through Brick Money.",
-        "spatie/typescript-transformer": "Consume the declared TypeScript attributes and metadata (^3.3); Core retains the runtime transformation engine."
+        "giggsey/libphonenumber-for-php": "Enables phone number validation and formatting (^9.0).",
+        "jschaedl/iban-validation": "Enables IBAN validation and formatting (^2.7).",
+        "symfony/intl": "Enables ISO country, currency, language, and locale reference data (^7.0 || ^8.0).",
+        "symfony/polyfill-intl-icu": "Enables Symfony Intl on PHP without ext-intl (^1.33)."
     },
     "autoload": {
         "psr-4": {
