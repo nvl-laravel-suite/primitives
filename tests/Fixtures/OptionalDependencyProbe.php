@@ -90,6 +90,7 @@ $call = static function (callable $operation): array {
 echo json_encode([
     'booted' => $app->make(ExchangeRateProvider::class) !== null,
     'moneyMinor' => Money::of('19.99', 'EUR')->minorAmount(),
+    'nativeIntlLoaded' => extension_loaded('intl'),
     'phoneAvailable' => class_exists(PhoneNumberUtil::class),
     'ibanAvailable' => class_exists(Validator::class),
     'intlAvailable' => class_exists(Countries::class),
