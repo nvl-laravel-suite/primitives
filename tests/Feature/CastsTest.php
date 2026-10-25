@@ -150,3 +150,23 @@ it('enforces the configured currency when hydrating json money', function (): vo
         ->and(fn () => $cast->get($model, 'money', '{"minor":"1234","currency":"USD"}', []))
         ->toThrow(InvalidArgumentException::class);
 });
+
+it('persists native scalar and array inputs without losing exact money units', function (): void {
+    $model = PrimitiveTestModel::query()->create([
+        'email' => 'Person@EXAMPLE.com',
+        'coordinates' => ['latitude' => '42.6977001', 'longitude' => '23.3219001'],
+        'money' => ['minor' => '9007199254740993', 'currency' => 'EUR'],
+    ])->fresh();
+
+    expect($model?->getRawOriginal('email'))->toBe('Person@example.com')
+        ->and($model?->email?->storageValue())->toBe('Person@example.com')
+        ->and($model?->getRawOriginal('coordinates'))
+        ->toBe('{"latitude":"42.6977001","longitude":"23.3219001"}')
+        ->and($model?->coordinates?->toArray())->toBe([
+            'latitude' => '42.6977001',
+            'longitude' => '23.3219001',
+        ])
+        ->and($model?->getRawOriginal('money'))
+        ->toBe('{"minor":"9007199254740993","currency":"EUR"}')
+        ->and($model?->money?->minorAmount())->toBe('9007199254740993');
+});
