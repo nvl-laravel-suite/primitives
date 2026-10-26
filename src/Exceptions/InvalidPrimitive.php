@@ -10,7 +10,7 @@ use Throwable;
 
 /**
  * @api
-
+ *
  * Reports an invalid value at a primitive construction boundary.
  */
 final class InvalidPrimitive extends InvalidArgumentException implements PackageException

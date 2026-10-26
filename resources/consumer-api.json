@@ -150,6 +150,16 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\Primitives\\Services\\ConfiguredExchangeRateProvider": {
+            "kind": "class",
+            "file": "src/Services/ConfiguredExchangeRateProvider.php",
+            "methods": [
+                "__construct",
+                "rate"
+            ],
+            "properties": [],
+            "constants": []
+        },
         "Nvl\\Primitives\\Services\\CurrencyConverter": {
             "kind": "class",
             "file": "src/Services/CurrencyConverter.php",

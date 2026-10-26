@@ -10,7 +10,9 @@ use Nvl\Support\Exceptions\ExceptionResponse;
 use Nvl\Support\Traits\InteractsWithPackageFailure;
 use RuntimeException;
 
-/** Base public Primitives runtime failure.
+/**
+ * Base public Primitives runtime failure.
+ *
  * @api
  */
 class PrimitivesException extends RuntimeException implements RespondableException

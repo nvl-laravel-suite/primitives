@@ -6,7 +6,7 @@ namespace Nvl\Primitives\Exceptions;
 
 /**
  * @api
-
+ *
  * Reports a currency pair for which no conversion rate is available.
  */
 final class ExchangeRateUnavailable extends PrimitivesException

@@ -19,6 +19,8 @@ use Nvl\Primitives\ValueObjects\DateTimeValue;
 
 /**
  * Resolves deterministic, explicitly directed exchange rates from configuration.
+ *
+ * @api
  */
 final readonly class ConfiguredExchangeRateProvider implements ExchangeRateProvider
 {

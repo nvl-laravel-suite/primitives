@@ -6,7 +6,9 @@ namespace Nvl\Primitives\Enums;
 
 use Nvl\Support\Contracts\ResponseCode;
 
-/** Stable public response discriminators for Primitives.
+/**
+ * Stable public response discriminators for Primitives.
+ *
  * @api
  */
 enum PrimitivesResponseCode: string implements ResponseCode

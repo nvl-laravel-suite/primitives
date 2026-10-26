@@ -6,7 +6,7 @@ namespace Nvl\Primitives\Exceptions;
 
 /**
  * @api
-
+ *
  * Reports a configured exchange rate that exceeded its explicit freshness limit.
  */
 final class ExchangeRateStale extends PrimitivesException
