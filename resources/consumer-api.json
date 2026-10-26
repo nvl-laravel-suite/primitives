@@ -78,7 +78,14 @@
             "kind": "class",
             "file": "src/Exceptions/ExchangeRateStale.php",
             "methods": [
-                "forPair"
+                "forPair",
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
             ],
             "properties": [],
             "constants": []
@@ -87,7 +94,14 @@
             "kind": "class",
             "file": "src/Exceptions/ExchangeRateUnavailable.php",
             "methods": [
-                "between"
+                "between",
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
             ],
             "properties": [],
             "constants": []
@@ -104,7 +118,15 @@
         "Nvl\\Primitives\\Exceptions\\PrimitivesException": {
             "kind": "class",
             "file": "src/Exceptions/PrimitivesException.php",
-            "methods": [],
+            "methods": [
+                "package",
+                "publicContext",
+                "responseCode",
+                "responseHeaders",
+                "suggestedStatus",
+                "translationKey",
+                "translationParameters"
+            ],
             "properties": [],
             "constants": []
         },
@@ -454,8 +476,5 @@
             "properties": [],
             "constants": []
         }
-    },
-    "models": {},
-    "capability_relations": {},
-    "tables": {}
+    }
 }

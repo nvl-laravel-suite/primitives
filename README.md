@@ -4,12 +4,9 @@
 
 ```sh
 composer require nvl/primitives:^6.0
-php artisan nvl:install primitives --dry-run
-php artisan nvl:install primitives
 ```
 
 Required NVL dependencies: `nvl/core` (`^6.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
-Review the published common config, select one migration owner, and run schema preflight before existing-table upgrades. The installer does not enable features or run migrations. Follow the detailed installation and capability sections below before invoking a storage/provider operation.
 
 ```php
 use Nvl\Primitives\ValueObjects\EmailAddress;
@@ -379,53 +376,15 @@ implementation with `$this->app->instance(Contract::class, $substitute)` before
 resolving your application service. A host binding installed before package
 registration is retained; later contract replacements affect subsequent
 resolutions. Rebuild previously resolved host services after replacing their
-dependencies. Concrete implementations remain callable with their original
-constructors through major 5. Mocks exercise your application orchestration;
+dependencies.  Mocks exercise your application orchestration;
 package authorization, persistence, and external effects need real integration
 tests.
 
 ExchangeRateProvider already retains host bindings through bindIf. Immutable value construction and calculations remain direct; no new interface or factory is introduced.
 
-For static consumer checks, include the shipped
-[`consumer-audit.neon`](https://github.com/nvl-laravel-suite/core/blob/main/support/consumer-audit.neon) from
-`vendor/nvl/core/support/consumer-audit.neon` in your host PHPStan configuration
-and configure explicit `nvlConsumer.testPaths` for factory-backed tests. The
-extension checks supported APIs and model/query boundaries; it does not prove
-authorization or arbitrary dynamic SQL.
+## Configuration and responses
 
-## Canonical configuration ownership
-
-Use `nvl-primitives` settings in `config/nvl-primitives.php` and canonical package environment names. Old generic roots are foreign unless an upgrading NVL host explicitly selects them in Core's default-off compatibility. Canonical false/null/empty values win; no old roots are populated or written back. Keep logical package/resource IDs unchanged. Review [Core's rename inventory and cache/worker cutover](https://github.com/nvl-laravel-suite/core/blob/main/UPGRADING.md#major-5-canonical-configuration-and-environment).
-
-## Testing your app
-
-Inject the supported contract rather than constructing its concrete Action or querying package tables. Replace `Nvl\Primitives\Contracts\Primitive` in Laravel's native container for a host-workflow test:
-
-```php
-use Nvl\Primitives\Contracts\Primitive;
-
-$double = Mockery::mock(Primitive::class);
-$this->app->instance(Primitive::class, $double);
-// Configure the exact equals arguments and documented return value for your host case.
-```
-
-The package's conditional native binding preserves host substitutions. Production uses the real contract; test doubles do not prove its storage/authorization behavior.
-
-This package has no persistent fixture model in the supported factory inventory. Test value objects and contract inputs directly; do not invent a package model factory.
-
-Use Laravel `Event::fake()`, `Queue::fake()`, `Mail::fake()` or `Storage::fake()` only for the effects the host test intends to isolate. Use real commits/listeners for timing proof. Add the optional Core consumer boundary rules to host PHPStan:
-
-```neon
-includes:
-    - vendor/nvl/core/support/consumer-audit.neon
-parameters:
-    nvlConsumer:
-        testPaths: [tests]
-        tableNames: []
-        exceptions: []
-```
-
-Rules read installed public metadata without suite boot. They flag internal symbols, package model queries/writes, capability relations and owned tables; they cannot prove dynamic code or runtime authorization. Exact exceptions require `file`, `identifier`, `symbol`, and a documented `reason`. The published 5.x family is verified through the local Dagger release gate on PHP 8.4/Laravel 13, including owning suites, MySQL/PostgreSQL persistence contracts and sealed Tenancy consumers. Fresh public Composer installation, discovery and configuration/route caching are verified. PHP 8.5, Laravel 12, MariaDB and the full independent archive matrix require separate evidence. See the [verification and release policy](https://github.com/nvl-laravel-suite/laravel-suite#verification-and-releases).
+Use `nvl-primitives` configuration and canonical package environment names. The consumer owns HTTP validation, response mapping and frontend types. Keep validated value objects and the existing exchange-rate provider boundary native.
 
 ## Error codes and events
 
