@@ -41,7 +41,7 @@ final readonly class ValidPrimitive implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        if (! is_scalar($value)) {
+        if (! is_string($value) && ! is_int($value)) {
             $fail('nvl-primitives::validation.invalid_primitive')->translate([
                 'primitive' => $this->label,
             ]);

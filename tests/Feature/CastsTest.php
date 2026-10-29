@@ -9,7 +9,30 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Tests\Fixtures\PrimitiveTestModel;
 use Nvl\Primitives\ValueObjects\Coordinates;
 use Nvl\Primitives\ValueObjects\EmailAddress;
+use Nvl\Primitives\ValueObjects\Identifier;
 use Nvl\Primitives\ValueObjects\Money;
+use Nvl\Primitives\ValueObjects\Percentage;
+
+it('rejects boolean and floating point input before scalar primitive coercion', function (mixed $value): void {
+    $model = new PrimitiveTestModel;
+    foreach ([Identifier::class, Percentage::class] as $class) {
+        $cast = new ScalarPrimitiveCast($class);
+        expect(fn () => $cast->set($model, 'value', $value, []))->toThrow(InvalidArgumentException::class);
+    }
+})->with([true, false, 1.25, 1.0000000000000002]);
+
+it('rejects noncanonical scalar storage before hydration', function (mixed $value): void {
+    expect(fn () => (new ScalarPrimitiveCast(Identifier::class))->get(new PrimitiveTestModel, 'value', $value, []))
+        ->toThrow(InvalidArgumentException::class);
+})->with([true, false, INF, -INF, NAN]);
+
+it('preserves exact scalar input while retaining native database float hydration', function (): void {
+    $cast = new ScalarPrimitiveCast(Percentage::class);
+    $model = new PrimitiveTestModel;
+    expect($cast->set($model, 'ratio', 1, []))->toBe('1')
+        ->and($cast->set($model, 'ratio', '1.0000000000000002', []))->toBe('1.0000000000000002')
+        ->and($cast->get($model, 'ratio', 1.25, [])?->storageValue())->toBe('1.25');
+});
 
 it('treats only actual null as an absent scalar primitive', function (): void {
     $cast = new ScalarPrimitiveCast(EmailAddress::class);

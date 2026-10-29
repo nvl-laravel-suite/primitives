@@ -3,10 +3,10 @@
 ## Quickstart
 
 ```sh
-composer require nvl/primitives:^6.0
+composer require nvl/primitives:^7.0
 ```
 
-Required NVL dependencies: `nvl/core` (`^6.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
+Required NVL dependencies: `nvl/core` (`^7.0`). Use immutable value objects for validated scalar values. No package model factory or database is required; invalid programmer input retains its native exception category.
 
 ```php
 use Nvl\Primitives\ValueObjects\EmailAddress;
@@ -27,7 +27,7 @@ See the [installation and publishing guide](https://github.com/nvl-laravel-suite
 
 | Item | Value |
 |---|---|
-| Installed through | `composer require nvl/primitives:^6.0` |
+| Installed through | `composer require nvl/primitives:^7.0` |
 | Module identifier | `nvl/primitives` |
 | PHP namespace | `Nvl\Primitives` |
 | Service provider | `Nvl\Primitives\Providers\PrimitivesServiceProvider` |
@@ -67,7 +67,7 @@ composer require symfony/polyfill-intl-icu:^1.33
 The package boots without these registries. Calling a dependent feature without its library throws an exception naming the package to install.
 
 ```bash
-composer require nvl/primitives:^6.0
+composer require nvl/primitives:^7.0
 php artisan vendor:publish --tag=nvl-primitives-config
 php artisan vendor:publish --tag=nvl-primitives-translations
 php artisan vendor:publish --tag=nvl-primitives-skills
@@ -115,6 +115,8 @@ protected function casts(): array
 ```
 
 Scalar primitives use one string/decimal column. `Coordinates`, `PostalAddress`, and default `Money` use JSON. Null remains null; malformed persisted values fail during hydration.
+
+Scalar cast assignment and `ValidPrimitive` accept strings and integers, preserving exact values. Booleans and input floats are rejected before coercion. Database-hydrated floats remain supported by scalar casts where the primitive permits them; use string columns when exact decimal storage is required.
 
 ### Money storage
 

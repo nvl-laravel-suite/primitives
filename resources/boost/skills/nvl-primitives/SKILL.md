@@ -49,6 +49,8 @@ An explicit `Money::class.':json,EUR'` currency is enforced on assignment and hy
 
 Use `ValidPrimitive` for scalar primitives and `ValidPhoneNumber` when a national-number region is required. Construct the value object again at the domain boundary; request validation alone is not a domain invariant.
 
+Scalar cast assignment and `ValidPrimitive` accept exact strings and integers, rejecting booleans and input floats before coercion. Scalar hydration can accept native database floats when the selected primitive supports them; choose string storage for exact decimal ratios or weights.
+
 ## Use reference catalogs
 
 Use `ReferenceCatalog` for current ISO countries, currencies, languages, and application locales from Core's `LocaleCatalog`. Its bounded records have `code`, `label`, and scalar `metadata` keys. Cities and banks are deployment-specific: configure small lists or use an application-owned catalog. Install `symfony/intl` before calling ISO catalog and code features.

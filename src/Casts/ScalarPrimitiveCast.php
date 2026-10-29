@@ -14,7 +14,7 @@ use Nvl\Primitives\Contracts\ScalarPrimitive;
  *
  * @template TPrimitive of ScalarPrimitive
  *
- * @implements CastsAttributes<TPrimitive|null, TPrimitive|string|null>
+ * @implements CastsAttributes<TPrimitive|null, TPrimitive|string|int|null>
  */
 final readonly class ScalarPrimitiveCast implements CastsAttributes
 {
@@ -43,7 +43,8 @@ final readonly class ScalarPrimitiveCast implements CastsAttributes
             return null;
         }
 
-        if (! is_scalar($value)) {
+        if ((! is_string($value) && ! is_int($value) && ! is_float($value))
+            || (is_float($value) && ! is_finite($value))) {
             throw new InvalidArgumentException("Attribute [{$key}] must contain a scalar primitive value.");
         }
 
@@ -69,8 +70,8 @@ final readonly class ScalarPrimitiveCast implements CastsAttributes
             return $value->storageValue();
         }
 
-        if (! is_scalar($value)) {
-            throw new InvalidArgumentException("Attribute [{$key}] must be a primitive or scalar value.");
+        if (! is_string($value) && ! is_int($value)) {
+            throw new InvalidArgumentException("Attribute [{$key}] must be a primitive, string, or integer value.");
         }
 
         return $this->primitiveClass::from((string) $value)->storageValue();

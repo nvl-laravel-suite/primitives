@@ -19,7 +19,12 @@ use Nvl\Primitives\Support\BrickMathCompatibility;
 use Nvl\Primitives\ValueObjects\CurrencyCode;
 use Nvl\Primitives\ValueObjects\EmailAddress;
 use Nvl\Primitives\ValueObjects\Money;
+use Nvl\Primitives\ValueObjects\Percentage;
 use Nvl\Support\Contracts\LocaleCatalog;
+
+it('rejects boolean and floating point input through scalar primitive validation', function (mixed $value): void {
+    expect(Validator::make(['ratio' => $value], ['ratio' => [new ValidPrimitive(Percentage::class)]])->fails())->toBeTrue();
+})->with([true, false, 1.25, 1.0000000000000002]);
 
 it('requires configured exchange rates in the requested direction', function (): void {
     config()->set('nvl-primitives.exchange_rates.rates', ['EUR/USD' => '1.10']);
