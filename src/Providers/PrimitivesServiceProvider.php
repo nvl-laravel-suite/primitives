@@ -40,7 +40,7 @@ final class PrimitivesServiceProvider extends ServiceProvider
             || ! is_a($implementation, ExchangeRateProvider::class, true)
         ) {
             throw new InvalidArgumentException(
-                'primitives.exchange_rates.implementation must implement ExchangeRateProvider.',
+                'nvl-primitives.exchange_rates.implementation must implement ExchangeRateProvider.',
             );
         }
 

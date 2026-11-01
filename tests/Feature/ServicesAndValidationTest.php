@@ -293,6 +293,9 @@ it('rejects an invalid configured exchange-rate implementation', function (): vo
     config()->set('nvl-primitives.exchange_rates.implementation', stdClass::class);
     $provider = new PrimitivesServiceProvider($this->app);
 
-    expect(fn () => $provider->register())->toThrow(InvalidArgumentException::class);
+    expect(fn () => $provider->register())->toThrow(
+        InvalidArgumentException::class,
+        'nvl-primitives.exchange_rates.implementation must implement ExchangeRateProvider.',
+    );
     expect(app(ExchangeRateProvider::class))->toBeInstanceOf(ConfiguredExchangeRateProvider::class);
 });

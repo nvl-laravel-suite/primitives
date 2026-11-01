@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use Composer\Autoload\ClassLoader;
+use Composer\InstalledVersions;
 
 /**
  * @return array<string, mixed>
@@ -10,7 +10,7 @@ use Composer\Autoload\ClassLoader;
 function optionalDependencyProbe(string $profile): array
 {
     $packageRoot = dirname(__DIR__, 2);
-    $vendor = dirname((new ReflectionClass(ClassLoader::class))->getFileName(), 2);
+    $vendor = dirname(InstalledVersions::getInstallPath('laravel/framework') ?? throw new RuntimeException('Laravel test dependencies are not installed.'), 2);
     $php = getenv('NVL_PRIMITIVES_NO_INTL_PHP') ?: PHP_BINARY;
     $command = [$php, '-n'];
 

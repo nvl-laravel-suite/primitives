@@ -98,6 +98,8 @@ The translation tag publishes validation overrides to
 
 Every primitive is immutable, JSON serializable, stringable, and type-safe for equality.
 
+`EmailAddress` and `Url` follow PHP's native ASCII email/URL validation policy. They do not perform IDNA conversion or accept internationalized email local parts. Convert internationalized domains to reviewed punycode and percent-encode non-ASCII URL components in the host before construction; use an application-owned value policy when SMTPUTF8 is required.
+
 ## Eloquent casts
 
 Declare the value-object class directly:
@@ -258,6 +260,8 @@ $sofia->googleMapsUrl();
 ```
 
 `PostalAddress` keeps components separate for country-specific presentation and permits countries without postal codes. `DateTimeValue` accepts only timezone-qualified RFC 3339 input with valid offset hours and minutes, preserves microseconds, and stores one canonical UTC value; convert only at display boundaries. Coordinate arrays accept numeric strings, integers, or floats and reject booleans. Email normalization preserves the complete local part, including quoted `@` characters, and lowercases only the domain.
+
+`Url` validates URL syntax and represents private or loopback hosts too. It supplies no DNS, redirect, network allowlist or SSRF protection; remote fetchers must enforce those policies separately. `EmailAddress` likewise does not establish deliverability or a public destination.
 
 ## Laravel validation
 

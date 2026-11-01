@@ -52,8 +52,9 @@ return [
     |--------------------------------------------------------------------------
     |
     | Countries, currencies, and languages come from Symfony Intl. Cities and
-    | banks are deployment-specific, so applications may configure entries or
-    | bind their own directory implementations.
+    | banks are deployment-specific and use the configured native entries.
+    | External directories belong behind an application-owned service; the
+    | package exposes no replaceable city/bank directory contract.
     |
     */
     'reference' => [

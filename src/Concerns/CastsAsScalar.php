@@ -16,7 +16,7 @@ trait CastsAsScalar
      * Return a class-aware scalar cast instance.
      *
      * @param  list<string>  $arguments
-     * @return CastsAttributes<static|null, static|string|null>
+     * @return CastsAttributes<static|null, static|string|int|null>
      */
     public static function castUsing(array $arguments): CastsAttributes
     {

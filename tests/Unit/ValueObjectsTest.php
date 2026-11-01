@@ -22,6 +22,15 @@ use Nvl\Primitives\ValueObjects\TimezoneId;
 use Nvl\Primitives\ValueObjects\Url;
 use Nvl\Primitives\ValueObjects\Weight;
 
+it('requires host conversion of international email and URL inputs', function (): void {
+    expect(EmailAddress::tryFrom('δοκιμή@example.com'))->toBeNull()
+        ->and(EmailAddress::tryFrom('reader@bücher.example'))->toBeNull()
+        ->and(Url::tryFrom('https://bücher.example/path'))->toBeNull()
+        ->and(Url::tryFrom('https://example.com/пример'))->toBeNull()
+        ->and(EmailAddress::from('reader@xn--bcher-kva.example')->domain())->toBe('xn--bcher-kva.example')
+        ->and(Url::from('https://xn--bcher-kva.example/%D0%BF')->host())->toBe('xn--bcher-kva.example');
+});
+
 it('uses one canonical UTC representation for instants', function (): void {
     $instant = DateTimeValue::from('2026-07-27T12:00:00.123456+03:00');
 

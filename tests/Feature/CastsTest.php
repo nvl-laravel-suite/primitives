@@ -30,6 +30,7 @@ it('preserves exact scalar input while retaining native database float hydration
     $cast = new ScalarPrimitiveCast(Percentage::class);
     $model = new PrimitiveTestModel;
     expect($cast->set($model, 'ratio', 1, []))->toBe('1')
+        ->and(Percentage::castUsing([])->set($model, 'ratio', 1, []))->toBe('1')
         ->and($cast->set($model, 'ratio', '1.0000000000000002', []))->toBe('1.0000000000000002')
         ->and($cast->get($model, 'ratio', 1.25, [])?->storageValue())->toBe('1.25');
 });
@@ -181,15 +182,18 @@ it('persists native scalar and array inputs without losing exact money units', f
         'money' => ['minor' => '9007199254740993', 'currency' => 'EUR'],
     ])->fresh();
 
+    $coordinates = json_decode($model?->getRawOriginal('coordinates'), associative: true, flags: JSON_THROW_ON_ERROR);
+    $money = json_decode($model?->getRawOriginal('money'), associative: true, flags: JSON_THROW_ON_ERROR);
+    ksort($coordinates);
+    ksort($money);
+
     expect($model?->getRawOriginal('email'))->toBe('Person@example.com')
         ->and($model?->email?->storageValue())->toBe('Person@example.com')
-        ->and($model?->getRawOriginal('coordinates'))
-        ->toBe('{"latitude":"42.6977001","longitude":"23.3219001"}')
+        ->and($coordinates)->toBe(['latitude' => '42.6977001', 'longitude' => '23.3219001'])
         ->and($model?->coordinates?->toArray())->toBe([
             'latitude' => '42.6977001',
             'longitude' => '23.3219001',
         ])
-        ->and($model?->getRawOriginal('money'))
-        ->toBe('{"minor":"9007199254740993","currency":"EUR"}')
+        ->and($money)->toBe(['currency' => 'EUR', 'minor' => '9007199254740993'])
         ->and($model?->money?->minorAmount())->toBe('9007199254740993');
 });
