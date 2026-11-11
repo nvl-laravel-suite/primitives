@@ -5,6 +5,8 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [7.0.1] - 2026-11-11
+
 ### Fixed
 
 - `LocaleCode` no longer accepts a subtag that ends in a line break (`"es-419\n-valencia"` was stored with the embedded newline).
@@ -12,6 +14,12 @@ All notable changes to `nvl/primitives` are documented here.
 - `Percentage::percentRounded()` reports an inexact result under `RoundingMode::Unnecessary` as `InvalidPrimitive`, like the other rounded operations.
 - `ReferenceCatalog::cities()` and `banks()` accept configured entries whose codes are numeric (PHP stores such array keys as integers, so they were refused as "not a string"); a list without codes is still rejected.
 - Documentation: the translation publish path is `lang/vendor/nvl-primitives`, and the security policy states the declared Laravel `^13.0` range.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- harden decimal input and value objects
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.0.0] - 2026-11-03
 
