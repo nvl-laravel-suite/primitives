@@ -11,6 +11,7 @@ use Nvl\Primitives\Contracts\ArrayPrimitive;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
+use Nvl\Primitives\Support\DecimalInput;
 
 /**
  * Immutable WGS84 latitude/longitude pair.
@@ -30,9 +31,14 @@ final readonly class Coordinates implements ArrayPrimitive
 
     public static function from(string|int|float $latitude, string|int|float $longitude): self
     {
+        $latitude = (string) $latitude;
+        $longitude = (string) $longitude;
+        DecimalInput::assertBounded($latitude, 'coordinates');
+        DecimalInput::assertBounded($longitude, 'coordinates');
+
         try {
-            $latitude = BigDecimal::of((string) $latitude);
-            $longitude = BigDecimal::of((string) $longitude);
+            $latitude = BigDecimal::of($latitude);
+            $longitude = BigDecimal::of($longitude);
         } catch (MathException $exception) {
             throw InvalidPrimitive::for('coordinates', $exception->getMessage());
         }

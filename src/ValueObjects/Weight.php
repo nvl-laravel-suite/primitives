@@ -11,6 +11,7 @@ use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
+use Nvl\Primitives\Support\DecimalInput;
 
 /**
  * Exact non-negative mass stored canonically in grams.
@@ -169,6 +170,8 @@ final readonly class Weight implements ScalarPrimitive
 
     private static function fromUnit(string|int $value, string $factor): self
     {
+        DecimalInput::assertBounded($value, 'weight');
+
         try {
             $grams = BrickMathCompatibility::stripTrailingZeros(
                 BigDecimal::of($value)->multipliedBy($factor),

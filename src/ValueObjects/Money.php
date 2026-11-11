@@ -16,6 +16,7 @@ use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
 use Nvl\Primitives\Support\BrickMoneyCompatibility;
+use Nvl\Primitives\Support\DecimalInput;
 
 /**
  * Immutable, exact monetary amount backed by Brick Money.
@@ -38,6 +39,7 @@ final readonly class Money implements ArrayPrimitive
     ): self {
         $code = $currency instanceof CurrencyCode ? (string) $currency : $currency;
         $roundingMode ??= BrickMathCompatibility::unnecessary();
+        DecimalInput::assertBounded($amount, 'money');
 
         try {
             return new self(BrickMoney::of($amount, $code, roundingMode: $roundingMode));
@@ -54,6 +56,7 @@ final readonly class Money implements ArrayPrimitive
         CurrencyCode|string $currency,
     ): self {
         $code = $currency instanceof CurrencyCode ? (string) $currency : $currency;
+        DecimalInput::assertBounded($minorAmount, 'money');
 
         try {
             return new self(BrickMoney::ofMinor($minorAmount, $code));
@@ -190,6 +193,7 @@ final readonly class Money implements ArrayPrimitive
         ?RoundingMode $roundingMode = null,
     ): self {
         $roundingMode ??= BrickMathCompatibility::unnecessary();
+        DecimalInput::assertBounded($multiplier, 'money arithmetic');
 
         try {
             return new self($this->money->multipliedBy($multiplier, $roundingMode));
@@ -206,6 +210,7 @@ final readonly class Money implements ArrayPrimitive
         ?RoundingMode $roundingMode = null,
     ): self {
         $roundingMode ??= BrickMathCompatibility::unnecessary();
+        DecimalInput::assertBounded($divisor, 'money arithmetic');
 
         try {
             return new self($this->money->dividedBy($divisor, $roundingMode));
@@ -223,6 +228,7 @@ final readonly class Money implements ArrayPrimitive
         RoundingMode $roundingMode,
     ): self {
         $code = $currency instanceof CurrencyCode ? (string) $currency : $currency;
+        DecimalInput::assertBounded($rate, 'money conversion');
 
         try {
             if (! BigDecimal::of($rate)->isPositive()) {

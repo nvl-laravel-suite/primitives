@@ -12,6 +12,7 @@ use Nvl\Primitives\Contracts\ArrayPrimitive;
 use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
+use Nvl\Primitives\Support\DecimalInput;
 
 /**
  * Exact non-negative length normalized through metres.
@@ -48,6 +49,8 @@ final readonly class Length implements ArrayPrimitive
         if ($factor === null) {
             throw InvalidPrimitive::for('length', "unit [{$unit}] is not supported.");
         }
+
+        DecimalInput::assertBounded($value, 'length');
 
         try {
             $metres = BrickMathCompatibility::stripTrailingZeros(

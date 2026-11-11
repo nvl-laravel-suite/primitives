@@ -189,11 +189,15 @@ final readonly class ReferenceCatalog
         }
 
         $options = [];
+        $keyed = ! array_is_list($configured);
 
         foreach ($configured as $code => $definition) {
+            // PHP stores numeric string keys such as bank routing codes as integers.
+            $code = trim((string) $code);
+
             if (
-                ! is_string($code)
-                || trim($code) === ''
+                ! $keyed
+                || $code === ''
                 || ! is_array($definition)
                 || ! is_string($definition['label'] ?? null)
                 || trim($definition['label']) === ''
@@ -225,7 +229,7 @@ final readonly class ReferenceCatalog
             }
 
             /** @var array<string, bool|int|float|string|null> $metadata */
-            $options[] = ['code' => trim($code), 'label' => trim($definition['label']), 'metadata' => $metadata];
+            $options[] = ['code' => $code, 'label' => trim($definition['label']), 'metadata' => $metadata];
         }
 
         return $this->filter($options, $search, $limit);

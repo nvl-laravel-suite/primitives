@@ -45,7 +45,7 @@ final readonly class LocaleCode implements ScalarPrimitive
 
         $normalized = [mb_strtolower(array_shift($parts))];
 
-        if (isset($parts[0]) && preg_match('/^[A-Za-z]{4}$/', $parts[0]) === 1) {
+        if (isset($parts[0]) && preg_match('/^[A-Za-z]{4}$/D', $parts[0]) === 1) {
             $script = mb_strtoupper(mb_substr($parts[0], 0, 1))
                 .mb_strtolower(mb_substr($parts[0], 1));
 
@@ -59,7 +59,7 @@ final readonly class LocaleCode implements ScalarPrimitive
 
         if (
             isset($parts[0])
-            && preg_match('/^(?:[A-Za-z]{2}|\d{3})$/', $parts[0]) === 1
+            && preg_match('/^(?:[A-Za-z]{2}|\d{3})$/D', $parts[0]) === 1
         ) {
             $region = mb_strtoupper($parts[0]);
 
@@ -80,7 +80,7 @@ final readonly class LocaleCode implements ScalarPrimitive
             $variant = mb_strtolower($part);
 
             if (
-                preg_match('/^(?:[A-Za-z0-9]{5,8}|\d[A-Za-z0-9]{3})$/', $part) !== 1
+                preg_match('/^(?:[A-Za-z0-9]{5,8}|\d[A-Za-z0-9]{3})$/D', $part) !== 1
                 || in_array($variant, $variants, true)
             ) {
                 throw InvalidPrimitive::for('locale code', "[{$part}] is not a valid variant subtag.");

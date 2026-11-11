@@ -53,7 +53,7 @@ It does not own users, settings, authorization, controllers, application routes,
 
 - PHP 8.4+
 - Laravel 13
-- `ext-mbstring`, `ext-json`, and `ext-ctype`
+- `ext-mbstring`, `ext-json`, `ext-ctype`, and `ext-filter`
 - optional `ext-intl` for locale-aware money formatting
 
 Brick Money/Math and Carbon are required. Install the optional registries for the capabilities your application calls:
@@ -75,7 +75,7 @@ php artisan vendor:publish --tag=nvl-primitives-skills
 
 The package has no migrations and works without a database.
 The translation tag publishes validation overrides to
-`lang/vendor/primitives` while package defaults continue to load directly.
+`lang/vendor/nvl-primitives` while package defaults continue to load directly.
 
 ## Value objects
 
@@ -259,6 +259,8 @@ $sofia->distanceTo($plovdiv);       // kilometres
 $sofia->googleMapsUrl();
 ```
 
+Decimal input may use scientific notation with at most three exponent digits (`1.5e3`); a larger exponent such as `1e999999999` is rejected as `InvalidPrimitive` instead of being expanded in memory.
+
 `PostalAddress` keeps components separate for country-specific presentation and permits countries without postal codes. `DateTimeValue` accepts only timezone-qualified RFC 3339 input with valid offset hours and minutes, preserves microseconds, and stores one canonical UTC value; convert only at display boundaries. Coordinate arrays accept numeric strings, integers, or floats and reject booleans. Email normalization preserves the complete local part, including quoted `@` characters, and lowercases only the domain.
 
 `Url` validates URL syntax and represents private or loopback hosts too. It supplies no DNS, redirect, network allowlist or SSRF protection; remote fetchers must enforce those policies separately. `EmailAddress` likewise does not establish deliverability or a public destination.
@@ -314,7 +316,7 @@ Countries, currencies, and languages come from installed Symfony Intl standards 
 ],
 ```
 
-Malformed catalog entries and limits outside `1..250` fail immediately. Large or dynamic datasets belong in an application service or repository. Primitives intentionally avoids mandatory reference tables and seeders.
+Each entry is keyed by its code. Numeric codes such as bank routing numbers are returned as strings; a list without codes is rejected. Malformed catalog entries and limits outside `1..250` fail immediately. Large or dynamic datasets belong in an application service or repository. Primitives intentionally avoids mandatory reference tables and seeders.
 
 ## Application projections
 

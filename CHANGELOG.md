@@ -5,6 +5,14 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- `LocaleCode` no longer accepts a subtag that ends in a line break (`"es-419\n-valencia"` was stored with the embedded newline).
+- `Money`, `Percentage`, `Weight`, `Length` and `Coordinates` reject decimal input with more than three exponent digits; `1e-999999999` previously exhausted memory with an uncatchable fatal error instead of failing validation.
+- `Percentage::percentRounded()` reports an inexact result under `RoundingMode::Unnecessary` as `InvalidPrimitive`, like the other rounded operations.
+- `ReferenceCatalog::cities()` and `banks()` accept configured entries whose codes are numeric (PHP stores such array keys as integers, so they were refused as "not a string"); a list without codes is still rejected.
+- Documentation: the translation publish path is `lang/vendor/nvl-primitives`, and the security policy states the declared Laravel `^13.0` range.
+
 ## [7.0.0] - 2026-11-03
 
 - Adopt the reviewed NVL 7 family for PHP 8.4+ and Laravel 13, with compatible required and optional NVL peers. Review the package upgrade guide before deployment.

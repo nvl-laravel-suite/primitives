@@ -12,6 +12,7 @@ use Nvl\Primitives\Contracts\Primitive;
 use Nvl\Primitives\Contracts\ScalarPrimitive;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Support\BrickMathCompatibility;
+use Nvl\Primitives\Support\DecimalInput;
 
 /**
  * Exact percentage stored as a decimal ratio where 1 represents 100%.
@@ -39,6 +40,8 @@ final readonly class Percentage implements ScalarPrimitive
      */
     public static function fromDecimal(string|int $value): self
     {
+        DecimalInput::assertBounded($value, 'percentage');
+
         try {
             return new self(BrickMathCompatibility::stripTrailingZeros(BigDecimal::of($value)));
         } catch (MathException $exception) {
@@ -51,6 +54,8 @@ final readonly class Percentage implements ScalarPrimitive
      */
     public static function fromPercent(string|int $value): self
     {
+        DecimalInput::assertBounded($value, 'percentage');
+
         try {
             return new self(BrickMathCompatibility::stripTrailingZeros(
                 BigDecimal::of($value)->multipliedBy('0.01'),
@@ -101,7 +106,11 @@ final readonly class Percentage implements ScalarPrimitive
     {
         $this->assertScale($scale);
 
-        return (string) $this->decimal->multipliedBy(100)->toScale($scale, $roundingMode);
+        try {
+            return (string) $this->decimal->multipliedBy(100)->toScale($scale, $roundingMode);
+        } catch (MathException $exception) {
+            throw InvalidPrimitive::for('percentage', $exception->getMessage(), $exception);
+        }
     }
 
     /**
@@ -109,6 +118,8 @@ final readonly class Percentage implements ScalarPrimitive
      */
     public function of(string|int $amount): string
     {
+        DecimalInput::assertBounded($amount, 'percentage calculation');
+
         try {
             return (string) BrickMathCompatibility::stripTrailingZeros(
                 BigDecimal::of($amount)->multipliedBy($this->decimal),
@@ -127,6 +138,7 @@ final readonly class Percentage implements ScalarPrimitive
         RoundingMode $roundingMode,
     ): string {
         $this->assertScale($scale);
+        DecimalInput::assertBounded($amount, 'percentage calculation');
 
         try {
             return (string) BigDecimal::of($amount)
