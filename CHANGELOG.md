@@ -5,9 +5,17 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [7.0.2] - 2026-11-13
+
 ### Fixed
 
 - Preserve explicit `null` attributes in `MoneyCast` and harden configured exchange-rate validation and optional-library probing.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- harden package runtime safety, PostgreSQL portability and test performance
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.0.1] - 2026-11-11
 
