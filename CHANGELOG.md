@@ -5,6 +5,10 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Preserve explicit `null` attributes in `MoneyCast` and harden configured exchange-rate validation and optional-library probing.
+
 ## [7.0.1] - 2026-11-11
 
 ### Fixed

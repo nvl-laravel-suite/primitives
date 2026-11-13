@@ -58,6 +58,7 @@ it('boots with phone, IBAN, and Intl libraries hidden from the isolated autoload
 
     expect($result['booted'])->toBeTrue()
         ->and($result['moneyMinor'])->toBe('1999')
+        ->and($result['moneyDecimalFloatCast'])->toBe('1999')
         ->and($result['phoneAvailable'])->toBeFalse()
         ->and($result['ibanAvailable'])->toBeFalse()
         ->and($result['intlAvailable'])->toBeFalse()

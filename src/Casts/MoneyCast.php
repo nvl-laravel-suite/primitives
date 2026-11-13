@@ -89,7 +89,7 @@ final readonly class MoneyCast implements CastsAttributes
 
                 $value = number_format(
                     $value,
-                    CurrencyCode::from((string) $this->currency)->fractionDigits(),
+                    CurrencyCode::from((string) $this->currency)->toBrick()->getDefaultFractionDigits(),
                     '.',
                     '',
                 );

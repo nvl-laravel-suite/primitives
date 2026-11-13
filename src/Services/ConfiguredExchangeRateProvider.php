@@ -14,6 +14,7 @@ use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Exceptions\ExchangeRateStale;
 use Nvl\Primitives\Exceptions\ExchangeRateUnavailable;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Support\DecimalInput;
 use Nvl\Primitives\ValueObjects\CurrencyCode;
 use Nvl\Primitives\ValueObjects\DateTimeValue;
 
@@ -119,6 +120,8 @@ final readonly class ConfiguredExchangeRateProvider implements ExchangeRateProvi
      */
     private function assertPositiveRate(string $rate, string $pair): string
     {
+        DecimalInput::assertBounded($rate, "exchange rate [{$pair}]");
+
         try {
             $decimal = BigDecimal::of($rate);
         } catch (MathException $exception) {

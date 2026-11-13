@@ -73,6 +73,7 @@ it('validates configured exchange-rate types and freshness metadata', function (
 })->with([
     'boolean rate' => [true, InvalidPrimitive::class],
     'floating-point rate' => [1.1, InvalidPrimitive::class],
+    'unbounded scientific exponent rate' => ['1e10000', InvalidPrimitive::class],
     'missing maximum age' => [[
         'rate' => '1.10',
         'as_of' => '2026-07-29T11:59:30Z',
