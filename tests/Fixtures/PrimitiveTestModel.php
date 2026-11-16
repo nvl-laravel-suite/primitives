@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Nvl\Primitives\Tests\Fixtures;
 
+use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
+use Nvl\Primitives\Casts\DateTimeCast;
 use Nvl\Primitives\ValueObjects\Coordinates;
 use Nvl\Primitives\ValueObjects\DateTimeValue;
 use Nvl\Primitives\ValueObjects\EmailAddress;
@@ -26,6 +28,9 @@ use Nvl\Primitives\ValueObjects\TimezoneId;
  * @property Coordinates|null $coordinates
  * @property PostalAddress|null $postal_address
  * @property DateTimeValue|null $date_time
+ * @property DateTimeValue|null $sql_timestamp
+ * @property CarbonImmutable|null $sql_timestamp_tz
+ * @property Money|null $record_price
  * @property TimezoneId|null $timezone
  * @property Identifier|null $external_id
  * @property Length|null $length
@@ -41,6 +46,7 @@ final class PrimitiveTestModel extends Model
         'email', 'phone', 'money', 'money_minor', 'money_decimal',
         'coordinates', 'postal_address', 'date_time', 'timezone',
         'external_id', 'length',
+        'currency', 'record_price', 'sql_timestamp', 'sql_timestamp_tz',
     ];
 
     /**
@@ -54,9 +60,12 @@ final class PrimitiveTestModel extends Model
             'money' => Money::class,
             'money_minor' => Money::class.':minor,EUR',
             'money_decimal' => Money::class.':decimal,EUR',
+            'record_price' => Money::class.':decimal,record,record_price_minor',
             'coordinates' => Coordinates::class,
             'postal_address' => PostalAddress::class,
             'date_time' => DateTimeValue::class,
+            'sql_timestamp' => DateTimeCast::class,
+            'sql_timestamp_tz' => DateTimeCast::class.':timestamptz,UTC,carbon',
             'timezone' => TimezoneId::class,
             'external_id' => Identifier::class,
             'length' => Length::class,

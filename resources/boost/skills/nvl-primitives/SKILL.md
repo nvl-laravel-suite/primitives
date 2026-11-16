@@ -39,12 +39,12 @@ Money arithmetic compares currencies rather than silently converting them.
 Exchange rates are directed positive decimal strings; configure every required direction explicitly.
 The host binds live/database rate acquisition; values do not call remote providers.
 Return canonical strings or native `toArray()` projections, not vendor objects.
-Keep source amounts and conversion provenance in host records when the domain requires them.
+Conversion chains retain the original value through `Money::source()`. Persist that provenance explicitly when the host needs it after reloading.
 
 ## Persist and validate
 
 Declare the primitive class in the host model's `casts()`.
-Money defaults to JSON minor/currency storage; fixed-currency cast modes require deliberate schema choices.
+Money defaults to JSON minor/currency storage. Scalar modes support explicit record currency and optional named minor and decimal columns. A populated minor column wins and both fields are written together.
 Null model attributes remain null rather than constructing an invalid primitive.
 Do not confuse omission in a host mutation with assigning null to clear a nullable column.
 Use `ValidPrimitive` only for scalar primitive classes and `ValidPhoneNumber` for region-aware phone input.

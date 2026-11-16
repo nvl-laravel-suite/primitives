@@ -5,22 +5,53 @@ declare(strict_types=1);
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Facades\Validator;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
+use Nvl\Primitives\Enums\StoragePolicy;
 use Nvl\Primitives\Exceptions\ExchangeRateStale;
 use Nvl\Primitives\Exceptions\ExchangeRateUnavailable;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
+use Nvl\Primitives\Exceptions\ParentCurrencyMigrationRequired;
 use Nvl\Primitives\Providers\PrimitivesServiceProvider;
 use Nvl\Primitives\Rules\ValidPhoneNumber;
 use Nvl\Primitives\Rules\ValidPrimitive;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
 use Nvl\Primitives\Services\CurrencyConverter;
 use Nvl\Primitives\Services\MoneyFormatter;
+use Nvl\Primitives\Services\MoneyPresenter;
+use Nvl\Primitives\Services\MoneyStorage;
 use Nvl\Primitives\Services\ReferenceCatalog;
 use Nvl\Primitives\Support\BrickMathCompatibility;
 use Nvl\Primitives\ValueObjects\CurrencyCode;
 use Nvl\Primitives\ValueObjects\EmailAddress;
 use Nvl\Primitives\ValueObjects\Money;
 use Nvl\Primitives\ValueObjects\Percentage;
+use Nvl\Primitives\ValueObjects\PresentationOptions;
 use Nvl\Support\Contracts\LocaleCatalog;
+
+it('preserves original money units through conversions and separates record storage decisions', function (): void {
+    $original = Money::minor(125, 'EUR');
+    $rounding = BrickMathCompatibility::halfUp();
+    $display = $original->convert('USD', '2', $rounding)->convert('GBP', '0.5', $rounding);
+    $record = CurrencyCode::from('EUR');
+    config()->set('nvl-primitives.exchange_rates.rates', ['GBP/EUR' => '2']);
+    $storage = app(MoneyStorage::class);
+
+    expect($display->source()->toArray())->toBe(['minor' => '125', 'currency' => 'EUR'])
+        ->and($display->toArray())->toBe(['minor' => '125', 'currency' => 'GBP'])
+        ->and($storage->prepare($display, $record, StoragePolicy::Preserve)->money->minorAmount())->toBe('250')
+        ->and($storage->prepare($display, $record, StoragePolicy::Adopt)->recordCurrency->storageValue())->toBe('GBP')
+        ->and($storage->prepare($display, $record, StoragePolicy::Adopt)->wasMigrated)->toBeTrue()
+        ->and(fn () => $storage->prepare($display, $record, StoragePolicy::Require))->toThrow(InvalidPrimitive::class)
+        ->and(fn () => $storage->prepare($display, $record, StoragePolicy::MigrateParent))->toThrow(ParentCurrencyMigrationRequired::class);
+
+    $presented = app(MoneyPresenter::class)->present($display, new PresentationOptions(locale: 'en', pair: $original));
+    expect($presented)->toMatchArray([
+        'amount' => '1.25', 'cents' => '125', 'currency' => 'GBP', 'recordCurrency' => 'EUR', 'recordCents' => '125',
+    ])->and($presented['pair'])->toMatchArray(['amount' => '1.25', 'cents' => '125', 'currency' => 'EUR'])
+        ->and($presented['formatted'])->toBeString()
+        ->and(app(MoneyPresenter::class)->present(Money::minor('9007199254740993', 'EUR')))->toMatchArray([
+            'cents' => '9007199254740993', 'formatted' => '90071992547409.93 EUR',
+        ]);
+});
 
 it('rejects boolean and floating point input through scalar primitive validation', function (mixed $value): void {
     expect(Validator::make(['ratio' => $value], ['ratio' => [new ValidPrimitive(Percentage::class)]])->fails())->toBeTrue();

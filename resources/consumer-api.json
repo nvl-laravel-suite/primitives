@@ -16,6 +16,19 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\Primitives\\Casts\\DateTimeCast": {
+            "kind": "class",
+            "file": "src/Casts/DateTimeCast.php",
+            "methods": [
+                "__construct",
+                "get",
+                "set"
+            ],
+            "properties": [
+                "withoutObjectCaching"
+            ],
+            "constants": []
+        },
         "Nvl\\Primitives\\Casts\\MoneyCast": {
             "kind": "class",
             "file": "src/Casts/MoneyCast.php",
@@ -24,7 +37,9 @@
                 "get",
                 "set"
             ],
-            "properties": [],
+            "properties": [
+                "withoutObjectCaching"
+            ],
             "constants": []
         },
         "Nvl\\Primitives\\Contracts\\ArrayPrimitive": {
@@ -47,11 +62,39 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\Primitives\\Contracts\\HasRecordCurrency": {
+            "kind": "interface",
+            "file": "src/Contracts/HasRecordCurrency.php",
+            "methods": [
+                "getRecordCurrency"
+            ],
+            "properties": [],
+            "constants": []
+        },
         "Nvl\\Primitives\\Contracts\\Primitive": {
             "kind": "interface",
             "file": "src/Contracts/Primitive.php",
             "methods": [
                 "equals"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Contracts\\RecordCurrencyResolver": {
+            "kind": "interface",
+            "file": "src/Contracts/RecordCurrencyResolver.php",
+            "methods": [
+                "resolve"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Contracts\\ReferenceDirectory": {
+            "kind": "interface",
+            "file": "src/Contracts/ReferenceDirectory.php",
+            "methods": [
+                "find",
+                "search"
             ],
             "properties": [],
             "constants": []
@@ -72,6 +115,25 @@
                 "ExchangeRateStale",
                 "ExchangeRateUnavailable",
                 "OperationFailed"
+            ]
+        },
+        "Nvl\\Primitives\\Enums\\StoragePolicy": {
+            "kind": "enum",
+            "file": "src/Enums/StoragePolicy.php",
+            "methods": [
+                "cases",
+                "from",
+                "tryFrom"
+            ],
+            "properties": [
+                "name",
+                "value"
+            ],
+            "constants": [
+                "Adopt",
+                "MigrateParent",
+                "Preserve",
+                "Require"
             ]
         },
         "Nvl\\Primitives\\Exceptions\\ExchangeRateStale": {
@@ -113,6 +175,18 @@
                 "for"
             ],
             "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Exceptions\\ParentCurrencyMigrationRequired": {
+            "kind": "class",
+            "file": "src/Exceptions/ParentCurrencyMigrationRequired.php",
+            "methods": [
+                "__construct"
+            ],
+            "properties": [
+                "inputCurrency",
+                "recordCurrency"
+            ],
             "constants": []
         },
         "Nvl\\Primitives\\Exceptions\\PrimitivesException": {
@@ -176,6 +250,26 @@
             "methods": [
                 "__construct",
                 "format"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Services\\MoneyPresenter": {
+            "kind": "class",
+            "file": "src/Services/MoneyPresenter.php",
+            "methods": [
+                "__construct",
+                "present"
+            ],
+            "properties": [],
+            "constants": []
+        },
+        "Nvl\\Primitives\\Services\\MoneyStorage": {
+            "kind": "class",
+            "file": "src/Services/MoneyStorage.php",
+            "methods": [
+                "__construct",
+                "prepare"
             ],
             "properties": [],
             "constants": []
@@ -367,10 +461,12 @@
                 "multiply",
                 "negate",
                 "of",
+                "source",
                 "split",
                 "subtract",
                 "toArray",
                 "toBrick",
+                "withSource",
                 "zero"
             ],
             "properties": [],
@@ -441,6 +537,32 @@
                 "line2",
                 "locality",
                 "postalCode"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\PresentationOptions": {
+            "kind": "class",
+            "file": "src/ValueObjects/PresentationOptions.php",
+            "methods": [
+                "__construct"
+            ],
+            "properties": [
+                "locale",
+                "pair",
+                "record"
+            ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\StorageResult": {
+            "kind": "class",
+            "file": "src/ValueObjects/StorageResult.php",
+            "methods": [
+                "__construct"
+            ],
+            "properties": [
+                "money",
+                "recordCurrency",
+                "wasMigrated"
             ],
             "constants": []
         },

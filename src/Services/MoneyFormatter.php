@@ -32,7 +32,7 @@ final readonly class MoneyFormatter
         $locale ??= $this->configuredLocale();
         $locale = (string) LocaleCode::from($locale);
 
-        if (! extension_loaded('intl')) {
+        if (! extension_loaded('intl') || strlen(ltrim($money->minorAmount(), '-')) > 15) {
             return $money->amount().' '.$money->currency();
         }
 

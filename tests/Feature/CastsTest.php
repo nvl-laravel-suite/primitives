@@ -2,12 +2,16 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\Eloquent\Model;
 use Nvl\Primitives\Casts\ArrayPrimitiveCast;
+use Nvl\Primitives\Casts\DateTimeCast;
 use Nvl\Primitives\Casts\MoneyCast;
 use Nvl\Primitives\Casts\ScalarPrimitiveCast;
+use Nvl\Primitives\Contracts\HasRecordCurrency;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
 use Nvl\Primitives\Tests\Fixtures\PrimitiveTestModel;
 use Nvl\Primitives\ValueObjects\Coordinates;
+use Nvl\Primitives\ValueObjects\DateTimeValue;
 use Nvl\Primitives\ValueObjects\EmailAddress;
 use Nvl\Primitives\ValueObjects\Identifier;
 use Nvl\Primitives\ValueObjects\Money;
@@ -196,4 +200,71 @@ it('persists native scalar and array inputs without losing exact money units', f
         ])
         ->and($money)->toBe(['currency' => 'EUR', 'minor' => '9007199254740993'])
         ->and($model?->money?->minorAmount())->toBe('9007199254740993');
+});
+it('reads record currency from a parent and writes only the configured money columns', function (): void {
+    $model = new class extends Model implements HasRecordCurrency
+    {
+        public function getRecordCurrency(): string
+        {
+            return $this->getRelation('parent')->currency;
+        }
+
+        protected function casts(): array
+        {
+            return [
+                'price' => Money::class.':decimal,record,price_minor',
+                'adjustment' => Money::class.':minor,record,adjustment_minor',
+            ];
+        }
+    };
+    $parent = (new class extends Model {})->forceFill(['currency' => 'BGN']);
+    $model->setRelation('parent', $parent);
+    $model->setRawAttributes(['price' => '8.70', 'price_minor' => '195', 'adjustment_minor' => '0'], true);
+    expect($model->price->amount())->toBe('1.95')
+        ->and((string) $model->price->currency())->toBe('BGN')
+        ->and($model->adjustment->minorAmount())->toBe('0')
+        ->and($model->getAttributes()['price'])->toBe('8.70');
+
+    $model->price = Money::minor(521, 'BGN');
+    $model->adjustment = Money::minor(-6, 'BGN');
+    expect($model->getAttributes())->toBe(['price' => '5.21', 'price_minor' => '521', 'adjustment_minor' => '-6']);
+    $model->price = null;
+    $model->adjustment = null;
+    expect($model->getAttributes())->toBe(['price' => null, 'price_minor' => null, 'adjustment_minor' => null])
+        ->and($model->price)->toBeNull()->and($model->adjustment)->toBeNull();
+});
+
+it('round-trips distinct instants in the repeated local hour through both SQL timestamp modes', function (): void {
+    $model = new class extends Model {};
+    $first = DateTimeValue::from('2026-10-25T03:30:00.253421+03:00');
+    $second = DateTimeValue::from('2026-10-25T03:30:00.253421+02:00');
+    foreach ([new DateTimeCast('timestamp'), new DateTimeCast('timestamptz')] as $cast) {
+        $storedFirst = $cast->set($model, 'occurred_at', $first, []);
+        $storedSecond = $cast->set($model, 'occurred_at', $second, []);
+        expect($storedFirst)->not->toBe($storedSecond)
+            ->and($cast->get($model, 'occurred_at', $storedFirst, [])->equals($first))->toBeTrue()
+            ->and($cast->get($model, 'occurred_at', $storedSecond, [])->equals($second))->toBeTrue();
+    }
+    $local = new DateTimeCast('timestamp', 'Europe/Sofia');
+    expect(fn () => $local->get($model, 'occurred_at', '2026-10-25 03:30:00', []))->toThrow(InvalidPrimitive::class, 'ambiguous')
+        ->and(fn () => $local->get($model, 'occurred_at', '2026-03-29 03:30:00', []))->toThrow(InvalidPrimitive::class)
+        ->and($local->get($model, 'occurred_at', '2026-10-25 04:30:00', [])->storageValue())->toBe('2026-10-25T02:30:00.000000Z');
+});
+
+it('persists both money columns and timestamp modes through Eloquent', function (): void {
+    $early = DateTimeValue::from('2026-10-25T03:30:00.253421+03:00');
+    $late = DateTimeValue::from('2026-10-25T03:30:00.253421+02:00');
+    $model = PrimitiveTestModel::query()->create([
+        'currency' => 'BGN', 'record_price' => Money::minor(0, 'BGN'), 'sql_timestamp' => $early, 'sql_timestamp_tz' => $late,
+    ])->fresh();
+
+    expect((string) $model->getRawOriginal('record_price_minor'))->toBe('0')
+        ->and($model->record_price->amount())->toBe('0.00')
+        ->and($model->sql_timestamp->equals($early))->toBeTrue()
+        ->and($model->sql_timestamp_tz->equalTo($late->carbon()))->toBeTrue()
+        ->and($model->isDirty())->toBeFalse();
+
+    $model->update(['record_price' => Money::minor(246, 'BGN')]);
+    expect((string) $model->getRawOriginal('record_price'))->toBe('2.46')
+        ->and((string) $model->getRawOriginal('record_price_minor'))->toBe('246');
 });

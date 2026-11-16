@@ -140,7 +140,9 @@ protected function casts(): array
 }
 ```
 
-Fixed modes accept a `Money` instance or a scalar representing that column's minor/decimal value. The cast rejects a different currency. An explicit `Money::class.':json,EUR'` currency is also enforced on both assignment and hydration. For variable-currency relational schemas, keep amount and currency in separate application-owned columns and construct `Money` at the model boundary.
+Scalar modes accept a `Money` instance or a scalar in the declared units. The cast expects the configured currency. JSON also supports an explicit currency with `Money::class.':json,EUR'`.
+
+Use `Money::class.':decimal,record,price_minor'` on `price` when the model stores both decimal and minor values. The populated minor column is authoritative, including zero. Writes update both columns and assigning null clears both. Use `Money::class.':minor,record,price_minor'` for a model attribute backed only by `price_minor`. An optional fourth argument explicitly names the decimal column. Record currency comes from `HasRecordCurrency::getRecordCurrency()` or the model's raw `currency` attribute. Bind `RecordCurrencyResolver` to map another source, such as an eager-loaded parent.
 
 SQLite hydrates `DECIMAL` columns as floating-point values. Decimal-mode casts normalize only those database-hydrated floats to the currency's fraction digits; assigning a float remains invalid. Prefer JSON or fixed-currency minor-unit storage when amounts may exceed SQLite's exact numeric range.
 
@@ -167,7 +169,13 @@ $total->currency();                            // CurrencyCode("EUR")
 $formatter->format($total, 'de-DE');           // locale-aware with ext-intl
 ```
 
-Currency is always explicit. An unrepresentable amount or operation throws unless a rounding mode is explicit. Arithmetic across currencies fails rather than converting implicitly. `MoneyFormatter` uses its injected configuration repository and falls back deterministically to `amount currency` when native `ext-intl` is unavailable.
+Currency is always explicit. An unrepresentable amount or operation requires a suitable rounding mode. Arithmetic requires matching currencies. `MoneyFormatter` uses its injected configuration repository and returns exact `amount currency` text when native `ext-intl` is unavailable or the minor units exceed the formatter's safe precision.
+
+Conversion chains keep their original exact value through `Money::source()`. Use `withSource()` when rehydrating separately persisted provenance. Arithmetic and the canonical `toArray()` payload represent the current value.
+
+`MoneyStorage::prepare()` selects a storage amount and currency through `StoragePolicy`. `Preserve` converts to the record currency and requires explicit rounding for inexact conversion. `Adopt` returns the input currency for the host to persist with the amount. `Require` demands a currency match. `MigrateParent` signals a required parent update through `ParentCurrencyMigrationRequired`. The application owns persistence and any parent migration.
+
+`MoneyPresenter::present()` returns `amount`, `cents`, `currency` and `formatted`, with optional `recordCurrency`, `recordCents` and `pair`. Pass `PresentationOptions` to select the locale or supply an explicit record or paired value. The exact numeric fields are strings. Applications own their DTO conversions.
 
 ### Currency conversion
 
@@ -262,6 +270,10 @@ $sofia->googleMapsUrl();
 Decimal input may use scientific notation with at most three exponent digits (`1.5e3`); a larger exponent such as `1e999999999` is rejected as `InvalidPrimitive` instead of being expanded in memory.
 
 `PostalAddress` keeps components separate for country-specific presentation and permits countries without postal codes. `DateTimeValue` accepts only timezone-qualified RFC 3339 input with valid offset hours and minutes, preserves microseconds, and stores one canonical UTC value; convert only at display boundaries. Coordinate arrays accept numeric strings, integers, or floats and reject booleans. Email normalization preserves the complete local part, including quoted `@` characters, and lowercases only the domain.
+
+Use `DateTimeCast::class.':timestamp,UTC'` for SQL timestamps without offsets and `DateTimeCast::class.':timestamptz,UTC'` for offset-aware storage. Use column precision 6 to keep microseconds. A named storage timezone for a bare timestamp requires an unambiguous wall time. Add the third argument `carbon` to hydrate `CarbonImmutable` directly.
+
+Implement `ReferenceDirectory` in the host for record-backed references that have database IDs. Its `find()` and bounded `search()` return the record identity, display label and scalar metadata. `ReferenceCatalog` remains available for ISO and configured lookups.
 
 `Url` validates URL syntax and represents private or loopback hosts too. It supplies no DNS, redirect, network allowlist or SSRF protection; remote fetchers must enforce those policies separately. `EmailAddress` likewise does not establish deliverability or a public destination.
 

@@ -27,6 +27,7 @@ final readonly class Money implements ArrayPrimitive
 {
     private function __construct(
         private BrickMoney $money,
+        private ?self $provenance = null,
     ) {}
 
     /**
@@ -134,6 +135,8 @@ final readonly class Money implements ArrayPrimitive
         return new MoneyCast(
             mode: $arguments[0] ?? 'json',
             currency: $arguments[1] ?? null,
+            minorColumn: $arguments[2] ?? null,
+            decimalColumn: $arguments[3] ?? null,
         );
     }
 
@@ -159,6 +162,18 @@ final readonly class Money implements ArrayPrimitive
     public function currency(): CurrencyCode
     {
         return CurrencyCode::from($this->money->getCurrency()->getCurrencyCode());
+    }
+
+    /** Return the exact original value before this chain of conversions. */
+    public function source(): self
+    {
+        return $this->provenance ?? $this;
+    }
+
+    /** Attach a separately persisted source amount when hydrating a converted value. */
+    public function withSource(self $source): self
+    {
+        return new self($this->money, $source->source());
     }
 
     /**
@@ -239,7 +254,7 @@ final readonly class Money implements ArrayPrimitive
                 $code,
                 $rate,
                 roundingMode: $roundingMode,
-            ));
+            ), $this->source());
         } catch (MoneyException|MathException $exception) {
             throw InvalidPrimitive::for('money conversion', $exception->getMessage(), $exception);
         }

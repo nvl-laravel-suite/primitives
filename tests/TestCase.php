@@ -38,9 +38,14 @@ abstract class TestCase extends Orchestra
             $table->json('money')->nullable();
             $table->string('money_minor')->nullable();
             $table->decimal('money_decimal', 12, 2)->nullable();
+            $table->string('currency')->nullable();
+            $table->decimal('record_price', 12, 2)->nullable();
+            $table->bigInteger('record_price_minor')->nullable();
             $table->json('coordinates')->nullable();
             $table->json('postal_address')->nullable();
             $table->string('date_time')->nullable();
+            $table->dateTime('sql_timestamp', precision: 6)->nullable();
+            $table->dateTimeTz('sql_timestamp_tz', precision: 6)->nullable();
             $table->string('timezone')->nullable();
             $table->string('external_id')->nullable();
             $table->json('length')->nullable();

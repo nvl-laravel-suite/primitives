@@ -7,7 +7,9 @@ namespace Nvl\Primitives\Providers;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
 use Nvl\Primitives\Contracts\ExchangeRateProvider;
+use Nvl\Primitives\Contracts\RecordCurrencyResolver;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
+use Nvl\Primitives\Services\ModelRecordCurrencyResolver;
 use Nvl\Support\Globals\GlobalNames;
 use Nvl\Support\Traits\MergesPackageConfiguration;
 use Nvl\Support\Traits\RegistersNamespacedResources;
@@ -45,6 +47,7 @@ final class PrimitivesServiceProvider extends ServiceProvider
         }
 
         $this->app->bindIf(ExchangeRateProvider::class, $implementation);
+        $this->app->bindIf(RecordCurrencyResolver::class, ModelRecordCurrencyResolver::class);
     }
 
     /**

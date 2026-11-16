@@ -7,20 +7,28 @@ Search for the relevant fully qualified service or contract and read only its ma
 ## Symbols
 
 - `Nvl\Primitives\Casts\ArrayPrimitiveCast`
+- `Nvl\Primitives\Casts\DateTimeCast`
 - `Nvl\Primitives\Casts\MoneyCast`
 - `Nvl\Primitives\Contracts\ArrayPrimitive`
 - `Nvl\Primitives\Contracts\ExchangeRateProvider`
+- `Nvl\Primitives\Contracts\HasRecordCurrency`
 - `Nvl\Primitives\Contracts\Primitive`
+- `Nvl\Primitives\Contracts\RecordCurrencyResolver`
+- `Nvl\Primitives\Contracts\ReferenceDirectory`
 - `Nvl\Primitives\Enums\PrimitivesResponseCode`
+- `Nvl\Primitives\Enums\StoragePolicy`
 - `Nvl\Primitives\Exceptions\ExchangeRateStale`
 - `Nvl\Primitives\Exceptions\ExchangeRateUnavailable`
 - `Nvl\Primitives\Exceptions\InvalidPrimitive`
+- `Nvl\Primitives\Exceptions\ParentCurrencyMigrationRequired`
 - `Nvl\Primitives\Exceptions\PrimitivesException`
 - `Nvl\Primitives\Rules\ValidPhoneNumber`
 - `Nvl\Primitives\Rules\ValidPrimitive`
 - `Nvl\Primitives\Services\ConfiguredExchangeRateProvider`
 - `Nvl\Primitives\Services\CurrencyConverter`
 - `Nvl\Primitives\Services\MoneyFormatter`
+- `Nvl\Primitives\Services\MoneyPresenter`
+- `Nvl\Primitives\Services\MoneyStorage`
 - `Nvl\Primitives\Services\ReferenceCatalog`
 - `Nvl\Primitives\ValueObjects\Coordinates`
 - `Nvl\Primitives\ValueObjects\CountryCode`
@@ -34,6 +42,8 @@ Search for the relevant fully qualified service or contract and read only its ma
 - `Nvl\Primitives\ValueObjects\Percentage`
 - `Nvl\Primitives\ValueObjects\PhoneNumber`
 - `Nvl\Primitives\ValueObjects\PostalAddress`
+- `Nvl\Primitives\ValueObjects\PresentationOptions`
+- `Nvl\Primitives\ValueObjects\StorageResult`
 - `Nvl\Primitives\ValueObjects\Url`
 - `Nvl\Primitives\ValueObjects\Weight`
 
@@ -59,21 +69,37 @@ public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixe
 @throws JsonException
 ```
 
+## Nvl\Primitives\Casts\DateTimeCast
+
+```text
+final readonly class Nvl\Primitives\Casts\DateTimeCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
+@implements CastsAttributes<(DateTimeValue | CarbonImmutable | null), (DateTimeValue | DateTimeInterface | string | null)>
+resolved @implements Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\DateTimeValue | Carbon\CarbonImmutable | null), (Nvl\Primitives\ValueObjects\DateTimeValue | DateTimeInterface | string | null)>
+public function __construct(string $mode="timestamp", string $timezone="UTC", string $hydrate="value"): mixed
+public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): Nvl\Primitives\ValueObjects\DateTimeValue|Carbon\CarbonImmutable|null
+@param array<string, mixed> $attributes
+public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?string
+@param array<string, mixed> $attributes
+public readonly bool $withoutObjectCaching
+```
+
 ## Nvl\Primitives\Casts\MoneyCast
 
 ```text
 final readonly class Nvl\Primitives\Casts\MoneyCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
 @implements CastsAttributes<(Money | null), (Money | array<string, mixed> | string | int | null)>
 resolved @implements Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\Money | null), (Nvl\Primitives\ValueObjects\Money | array<string, mixed> | string | int | null)>
-public function __construct(string $mode=self::Json, ?string $currency=null): mixed
+public function __construct(string $mode=self::Json, ?string $currency=null, ?string $minorColumn=null, ?string $decimalColumn=null): mixed
 @param string $mode
 @param (string | null) $currency
 public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?Nvl\Primitives\ValueObjects\Money
 @param array<string, mixed> $attributes
 @throws JsonException
-public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?string
+public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): string|array|null
 @param array<string, mixed> $attributes
+@return (string | array<string, (string | null)> | null)
 @throws JsonException
+public readonly bool $withoutObjectCaching
 ```
 
 ## Nvl\Primitives\Contracts\ArrayPrimitive
@@ -94,11 +120,38 @@ interface Nvl\Primitives\Contracts\ExchangeRateProvider
 public abstract function rate(Nvl\Primitives\ValueObjects\CurrencyCode $from, Nvl\Primitives\ValueObjects\CurrencyCode $to, ?DateTimeInterface $at=null): string
 ```
 
+## Nvl\Primitives\Contracts\HasRecordCurrency
+
+```text
+interface Nvl\Primitives\Contracts\HasRecordCurrency
+public abstract function getRecordCurrency(): Nvl\Primitives\ValueObjects\CurrencyCode|string
+```
+
 ## Nvl\Primitives\Contracts\Primitive
 
 ```text
 interface Nvl\Primitives\Contracts\Primitive extends Illuminate\Contracts\Database\Eloquent\Castable, JsonSerializable, Stringable
 public abstract function equals(Nvl\Primitives\Contracts\Primitive $other): bool
+```
+
+## Nvl\Primitives\Contracts\RecordCurrencyResolver
+
+```text
+interface Nvl\Primitives\Contracts\RecordCurrencyResolver
+public abstract function resolve(Illuminate\Database\Eloquent\Model $model, string $attribute, array $attributes): Nvl\Primitives\ValueObjects\CurrencyCode
+@param array<string, mixed> $attributes
+```
+
+## Nvl\Primitives\Contracts\ReferenceDirectory
+
+```text
+interface Nvl\Primitives\Contracts\ReferenceDirectory
+public abstract function find(string $catalog, string $id): ?array
+@return (ReferenceRecord | null)
+resolved @return (array{id: string, code: ?string, label: string, metadata: array<string, (bool | int | float | string | null)>} | null)
+public abstract function search(string $catalog, ?string $query=null, int $limit=50): array
+@return list<ReferenceRecord>
+resolved @return list<array{id: string, code: ?string, label: string, metadata: array<string, (bool | int | float | string | null)>}>
 ```
 
 ## Nvl\Primitives\Enums\PrimitivesResponseCode
@@ -108,6 +161,21 @@ enum Nvl\Primitives\Enums\PrimitivesResponseCode implements BackedEnum, Nvl\Supp
 public const Nvl\Primitives\Enums\PrimitivesResponseCode ExchangeRateStale=Nvl\Primitives\Enums\PrimitivesResponseCode::ExchangeRateStale="exchange_rate_stale"
 public const Nvl\Primitives\Enums\PrimitivesResponseCode ExchangeRateUnavailable=Nvl\Primitives\Enums\PrimitivesResponseCode::ExchangeRateUnavailable="exchange_rate_unavailable"
 public const Nvl\Primitives\Enums\PrimitivesResponseCode OperationFailed=Nvl\Primitives\Enums\PrimitivesResponseCode::OperationFailed="operation_failed"
+public readonly string $name
+public static function cases(): array
+public readonly string $value
+public static function from(string|int $value): static
+public static function tryFrom(string|int $value): ?static
+```
+
+## Nvl\Primitives\Enums\StoragePolicy
+
+```text
+enum Nvl\Primitives\Enums\StoragePolicy implements BackedEnum, UnitEnum: string
+public const Nvl\Primitives\Enums\StoragePolicy Adopt=Nvl\Primitives\Enums\StoragePolicy::Adopt="adopt"
+public const Nvl\Primitives\Enums\StoragePolicy MigrateParent=Nvl\Primitives\Enums\StoragePolicy::MigrateParent="migrate_parent"
+public const Nvl\Primitives\Enums\StoragePolicy Preserve=Nvl\Primitives\Enums\StoragePolicy::Preserve="preserve"
+public const Nvl\Primitives\Enums\StoragePolicy Require=Nvl\Primitives\Enums\StoragePolicy::Require="require"
 public readonly string $name
 public static function cases(): array
 public readonly string $value
@@ -154,6 +222,15 @@ public function translationParameters(): array
 ```text
 final class Nvl\Primitives\Exceptions\InvalidPrimitive extends InvalidArgumentException implements Nvl\Support\Contracts\PackageException
 public static function for(string $primitive, string $reason, ?Throwable $previous=null): self
+```
+
+## Nvl\Primitives\Exceptions\ParentCurrencyMigrationRequired
+
+```text
+final class Nvl\Primitives\Exceptions\ParentCurrencyMigrationRequired extends LogicException implements Nvl\Support\Contracts\PackageException
+public function __construct(Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency, Nvl\Primitives\ValueObjects\CurrencyCode $inputCurrency): mixed
+public readonly Nvl\Primitives\ValueObjects\CurrencyCode $inputCurrency
+public readonly Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency
 ```
 
 ## Nvl\Primitives\Exceptions\PrimitivesException
@@ -215,6 +292,24 @@ public function convert(Nvl\Primitives\ValueObjects\Money $money, Nvl\Primitives
 final readonly class Nvl\Primitives\Services\MoneyFormatter
 public function __construct(Illuminate\Contracts\Config\Repository $config): mixed
 public function format(Nvl\Primitives\ValueObjects\Money $money, ?string $locale=null): string
+```
+
+## Nvl\Primitives\Services\MoneyPresenter
+
+```text
+final readonly class Nvl\Primitives\Services\MoneyPresenter
+public function __construct(Nvl\Primitives\Services\MoneyFormatter $formatter): mixed
+public function present(Nvl\Primitives\ValueObjects\Money $money, ?Nvl\Primitives\ValueObjects\PresentationOptions $options=null): array
+@return array{amount: string, cents: string, currency: string, formatted: string, recordCurrency?: string, recordCents?: string, pair?: MoneyValue}
+resolved @return array{amount: string, cents: string, currency: string, formatted: string, recordCurrency?: string, recordCents?: string, pair?: array{amount: string, cents: string, currency: string, formatted: string}}
+```
+
+## Nvl\Primitives\Services\MoneyStorage
+
+```text
+final readonly class Nvl\Primitives\Services\MoneyStorage
+public function __construct(Nvl\Primitives\Services\CurrencyConverter $converter): mixed
+public function prepare(Nvl\Primitives\ValueObjects\Money $money, Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency, Nvl\Primitives\Enums\StoragePolicy $policy, ?Brick\Math\RoundingMode $roundingMode=null, ?DateTimeInterface $at=null): Nvl\Primitives\ValueObjects\StorageResult
 ```
 
 ## Nvl\Primitives\Services\ReferenceCatalog
@@ -430,6 +525,7 @@ public function minorAmount(): string
 public function multiply(string|int $multiplier, ?Brick\Math\RoundingMode $roundingMode=null): self
 public function negate(): self
 public static function of(string|int $amount, Nvl\Primitives\ValueObjects\CurrencyCode|string $currency, ?Brick\Math\RoundingMode $roundingMode=null): self
+public function source(): self
 public function split(int $parts): array
 @return list<self>
 resolved @return list<Nvl\Primitives\ValueObjects\Money>
@@ -437,6 +533,7 @@ public function subtract(self $other): self
 public function toArray(): array
 @return array{minor: string, currency: string}
 public function toBrick(): Brick\Money\Money
+public function withSource(self $source): self
 public static function zero(Nvl\Primitives\ValueObjects\CurrencyCode|string $currency): self
 ```
 
@@ -511,6 +608,26 @@ public readonly string $line1
 public readonly ?string $line2
 public readonly string $locality
 public readonly ?string $postalCode
+```
+
+## Nvl\Primitives\ValueObjects\PresentationOptions
+
+```text
+final readonly class Nvl\Primitives\ValueObjects\PresentationOptions
+public function __construct(?string $locale=null, ?Nvl\Primitives\ValueObjects\Money $record=null, ?Nvl\Primitives\ValueObjects\Money $pair=null): mixed
+public readonly ?string $locale
+public readonly ?Nvl\Primitives\ValueObjects\Money $pair
+public readonly ?Nvl\Primitives\ValueObjects\Money $record
+```
+
+## Nvl\Primitives\ValueObjects\StorageResult
+
+```text
+final readonly class Nvl\Primitives\ValueObjects\StorageResult
+public function __construct(Nvl\Primitives\ValueObjects\Money $money, Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency, bool $wasMigrated=false): mixed
+public readonly Nvl\Primitives\ValueObjects\Money $money
+public readonly Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency
+public readonly bool $wasMigrated
 ```
 
 ## Nvl\Primitives\ValueObjects\Url
