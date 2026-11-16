@@ -5,6 +5,19 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [7.1.0] - 2026-11-16
+
+### Highlights
+
+- Resolve currency from the record for money casts and support synchronized decimal and minor-unit columns.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- close NVL consumer adoption and portability gaps
+- Merge pull request #21 from nicolasvlachos/codex/consumer-postgresql-validation
+<!-- NVL GENERATED CHANGES END -->
+
 ## [7.0.2] - 2026-11-13
 
 ### Fixed
