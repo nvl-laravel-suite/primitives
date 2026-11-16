@@ -21,6 +21,7 @@
             "file": "src/Casts/DateTimeCast.php",
             "methods": [
                 "__construct",
+                "compare",
                 "get",
                 "set"
             ],
@@ -412,6 +413,21 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\Primitives\\ValueObjects\\Identifier": {
+            "kind": "class",
+            "file": "src/ValueObjects/Identifier.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "jsonSerialize",
+                "storageValue",
+                "tryFrom"
+            ],
+            "properties": [],
+            "constants": []
+        },
         "Nvl\\Primitives\\ValueObjects\\Length": {
             "kind": "class",
             "file": "src/ValueObjects/Length.php",
@@ -576,6 +592,22 @@
                 "recordCurrency",
                 "wasMigrated"
             ],
+            "constants": []
+        },
+        "Nvl\\Primitives\\ValueObjects\\TimezoneId": {
+            "kind": "class",
+            "file": "src/ValueObjects/TimezoneId.php",
+            "methods": [
+                "__toString",
+                "castUsing",
+                "equals",
+                "from",
+                "jsonSerialize",
+                "storageValue",
+                "timezone",
+                "tryFrom"
+            ],
+            "properties": [],
             "constants": []
         },
         "Nvl\\Primitives\\ValueObjects\\Url": {

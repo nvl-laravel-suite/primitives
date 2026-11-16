@@ -12,6 +12,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Canonical IANA timezone identifier suitable for persistence.
+ *
+ * @api
  */
 final readonly class TimezoneId implements ScalarPrimitive
 {

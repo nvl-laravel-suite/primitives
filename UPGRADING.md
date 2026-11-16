@@ -1,5 +1,9 @@
 # Upgrading NVL Primitives
 
+## Unreleased
+
+No change is required. To stop a scalar money cast falling back to a stale or unselected decimal column, add the `strict` authority argument: `Money::class.':decimal,EUR,price_minor,,strict'`. Strict casts throw when a query selects the decimal without its minor column, and when a stored minor column is null beside a decimal; backfill such rows before enabling it. `DateTimeCast` dirty checks now compare instants; code that relied on reassigning the same instant to force an update must change the value or call `touch()` instead.
+
 ## NVL Light: family 7
 
 Light requires PHP 8.4 and Laravel 13. Replace retired package Actions, transport DTOs, HTTP endpoints and generated frontend types with host-owned adapters around the native services documented in [README.md](README.md). Models remain ordinary Eloquent models; domain operations retain their documented policies, validation, locks and lifecycle guarantees. Pass explicit admitted actors and configure optional integrations deliberately.

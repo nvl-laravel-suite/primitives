@@ -29,11 +29,15 @@ final readonly class MoneyCast implements CastsAttributes
 
     private const string Record = 'record';
 
+    private const string Strict = 'strict';
+
     private string $mode;
 
     private ?CurrencyCode $currency;
 
     private bool $recordCurrency;
+
+    private bool $strictMinor;
 
     public bool $withoutObjectCaching;
 
@@ -42,12 +46,14 @@ final readonly class MoneyCast implements CastsAttributes
      *
      * @param  string  $mode  json, minor, or decimal
      * @param  string|null  $currency  ISO code or 'record', required for scalar modes
+     * @param  string|null  $authority  'strict' makes the minor column the only source: it must be loaded and never falls back to the decimal
      */
     public function __construct(
         string $mode = self::Json,
         ?string $currency = null,
         private ?string $minorColumn = null,
         private ?string $decimalColumn = null,
+        ?string $authority = null,
     ) {
         if (! in_array($mode, [self::Json, self::Minor, self::Decimal], true)) {
             throw new InvalidArgumentException("Unsupported money cast mode [{$mode}].");
@@ -64,7 +70,15 @@ final readonly class MoneyCast implements CastsAttributes
                 throw new InvalidArgumentException('Money column mappings require scalar modes and plain attribute names.');
             }
         }
+        if ($authority !== null && $authority !== self::Strict) {
+            throw new InvalidArgumentException("Unsupported money cast authority [{$authority}].");
+        }
+
+        if ($authority === self::Strict && $mode !== self::Minor && $minorColumn === null) {
+            throw new InvalidArgumentException('Strict money minor authority requires a minor column.');
+        }
         $this->mode = $mode;
+        $this->strictMinor = $authority === self::Strict;
         $this->recordCurrency = $currency === self::Record;
         $this->currency = $currency !== null && ! $this->recordCurrency ? CurrencyCode::from($currency) : null;
         $this->withoutObjectCaching = $this->recordCurrency || $minorColumn !== null || $decimalColumn !== null;
@@ -87,6 +101,9 @@ final readonly class MoneyCast implements CastsAttributes
             [$minorKey, $decimalKey] = $this->columns($key);
             $minor = $minorKey === $key ? $value : ($minorKey === null ? null : ($attributes[$minorKey] ?? null));
             $decimal = $decimalKey === $key ? $value : ($decimalKey === null ? null : ($attributes[$decimalKey] ?? null));
+            if ($this->strictMinor && $minor === null) {
+                $this->assertAuthoritativeMinor($key, $minorKey, $decimalKey, $decimal, $attributes);
+            }
             if ($minor === null && $decimal === null) {
                 return null;
             }
@@ -196,6 +213,28 @@ final readonly class MoneyCast implements CastsAttributes
         $this->assertCurrency($money, $key, $currency);
 
         return $this->mode === self::Json ? json_encode($money->toArray(), JSON_THROW_ON_ERROR) : $this->scalarStorage($key, $money);
+    }
+
+    /**
+     * Refuse a null strict minor amount when the minor column was omitted beside a loaded decimal,
+     * or when it is null beside a decimal amount, instead of falling back to the decimal.
+     *
+     * @param  array<string, mixed>  $attributes
+     */
+    private function assertAuthoritativeMinor(string $key, ?string $minorKey, ?string $decimalKey, mixed $decimal, array $attributes): void
+    {
+        $decimalLoaded = $decimal !== null || ($decimalKey !== null && array_key_exists($decimalKey, $attributes));
+        if ($minorKey === null || ! array_key_exists($minorKey, $attributes)) {
+            if ($decimalLoaded) {
+                throw new InvalidArgumentException("Attribute [{$key}] requires its authoritative minor column [{$minorKey}] to be loaded.");
+            }
+
+            return;
+        }
+
+        if ($decimal !== null) {
+            throw new InvalidArgumentException("Attribute [{$key}] has a decimal amount but a null authoritative minor column [{$minorKey}].");
+        }
     }
 
     /** @return array{?string,?string} */

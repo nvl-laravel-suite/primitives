@@ -11,6 +11,8 @@ use Nvl\Primitives\Exceptions\InvalidPrimitive;
 
 /**
  * Transport-safe opaque identifier supporting integer, UUID, ULID, and string keys.
+ *
+ * @api
  */
 final readonly class Identifier implements ScalarPrimitive
 {

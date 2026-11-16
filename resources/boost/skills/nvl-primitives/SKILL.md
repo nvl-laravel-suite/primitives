@@ -46,7 +46,7 @@ Arithmetic carries compatible source amounts; mixing source currencies drops pro
 ## Persist and validate
 
 Declare the primitive class in the host model's `casts()`.
-Money defaults to JSON minor/currency storage. Scalar modes support explicit record currency and optional named minor and decimal columns. A populated minor column wins and both fields are written together.
+Money defaults to JSON minor/currency storage. Scalar modes support explicit record currency and optional named minor and decimal columns. A populated minor column wins and both fields are written together. Add the fifth argument `strict` (for example `Money::class.':decimal,EUR,price_minor,,strict'`) when the minor column is the only source: hydration then never falls back to the decimal, throws when a query loads the decimal without the minor column, and rejects a null minor column beside a decimal. `DateTimeCast` compares stored instants, so reassigning an equal instant does not dirty the model.
 Null model attributes remain null rather than constructing an invalid primitive.
 Do not confuse omission in a host mutation with assigning null to clear a nullable column.
 Use `ValidPrimitive` only for scalar primitive classes and `ValidPhoneNumber` for region-aware phone input.

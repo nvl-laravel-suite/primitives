@@ -95,3 +95,16 @@ it('leaves operands unchanged and never nests provenance', function (): void {
         ->and($first->source()->toArray())->toBe(['minor' => '196', 'currency' => 'BGN'])
         ->and($second->source()->toArray())->toBe(['minor' => '391', 'currency' => 'BGN']);
 });
+
+it('rejects an inexact primary result with an exact source under Unnecessary', function (): void {
+    $value = Money::minor(3, 'EUR')->withSource(Money::minor(2, 'BGN'));
+    $unnecessary = BrickMathCompatibility::unnecessary();
+    $halved = $value->divide(2, BrickMathCompatibility::halfUp());
+
+    expect(fn () => $value->divide(2, $unnecessary))->toThrow(InvalidPrimitive::class)
+        ->and(fn () => $value->multiply('0.5', $unnecessary))->toThrow(InvalidPrimitive::class)
+        ->and(fn () => $value->divide(2))->toThrow(InvalidPrimitive::class)
+        ->and($value->source()->divide(2, $unnecessary)->minorAmount())->toBe('1')
+        ->and($halved->minorAmount())->toBe('2')
+        ->and($halved->source()->minorAmount())->toBe('1');
+});

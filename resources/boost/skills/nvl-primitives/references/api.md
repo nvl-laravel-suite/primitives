@@ -37,6 +37,7 @@ Search for the relevant fully qualified service or contract and read only its ma
 - `Nvl\Primitives\ValueObjects\DateTimeValue`
 - `Nvl\Primitives\ValueObjects\EmailAddress`
 - `Nvl\Primitives\ValueObjects\Iban`
+- `Nvl\Primitives\ValueObjects\Identifier`
 - `Nvl\Primitives\ValueObjects\Length`
 - `Nvl\Primitives\ValueObjects\LocaleCode`
 - `Nvl\Primitives\ValueObjects\Money`
@@ -45,6 +46,7 @@ Search for the relevant fully qualified service or contract and read only its ma
 - `Nvl\Primitives\ValueObjects\PostalAddress`
 - `Nvl\Primitives\ValueObjects\PresentationOptions`
 - `Nvl\Primitives\ValueObjects\StorageResult`
+- `Nvl\Primitives\ValueObjects\TimezoneId`
 - `Nvl\Primitives\ValueObjects\Url`
 - `Nvl\Primitives\ValueObjects\Weight`
 
@@ -73,10 +75,11 @@ public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixe
 ## Nvl\Primitives\Casts\DateTimeCast
 
 ```text
-final readonly class Nvl\Primitives\Casts\DateTimeCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
+final readonly class Nvl\Primitives\Casts\DateTimeCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes, Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes
 @implements CastsAttributes<(DateTimeValue | CarbonImmutable | null), (DateTimeValue | DateTimeInterface | string | null)>
 resolved @implements Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\DateTimeValue | Carbon\CarbonImmutable | null), (Nvl\Primitives\ValueObjects\DateTimeValue | DateTimeInterface | string | null)>
 public function __construct(string $mode="timestamp", string $timezone="UTC", string $hydrate="value"): mixed
+public function compare(Illuminate\Database\Eloquent\Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
 public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): Nvl\Primitives\ValueObjects\DateTimeValue|Carbon\CarbonImmutable|null
 @param array<string, mixed> $attributes
 public function set(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?string
@@ -90,9 +93,10 @@ public readonly bool $withoutObjectCaching
 final readonly class Nvl\Primitives\Casts\MoneyCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
 @implements CastsAttributes<(Money | null), (Money | array<string, mixed> | string | int | null)>
 resolved @implements Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\Money | null), (Nvl\Primitives\ValueObjects\Money | array<string, mixed> | string | int | null)>
-public function __construct(string $mode=self::Json, ?string $currency=null, ?string $minorColumn=null, ?string $decimalColumn=null): mixed
+public function __construct(string $mode=self::Json, ?string $currency=null, ?string $minorColumn=null, ?string $decimalColumn=null, ?string $authority=null): mixed
 @param string $mode
 @param (string | null) $currency
+@param (string | null) $authority
 public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?Nvl\Primitives\ValueObjects\Money
 @param array<string, mixed> $attributes
 @throws JsonException
@@ -468,6 +472,22 @@ public function storageValue(): string
 public static function tryFrom(string $value): ?self
 ```
 
+## Nvl\Primitives\ValueObjects\Identifier
+
+```text
+final readonly class Nvl\Primitives\ValueObjects\Identifier implements Nvl\Primitives\Contracts\ScalarPrimitive
+public function __toString(): string
+public static function castUsing(array $arguments): Illuminate\Contracts\Database\Eloquent\CastsAttributes
+@param list<string> $arguments
+@return CastsAttributes<(static | null), (static | string | int | null)>
+resolved @return Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\Identifier | null), (Nvl\Primitives\ValueObjects\Identifier | string | int | null)>
+public function equals(Nvl\Primitives\Contracts\Primitive $other): bool
+public static function from(string|int $value): static
+public function jsonSerialize(): string
+public function storageValue(): string
+public static function tryFrom(string|int $value): ?self
+```
+
 ## Nvl\Primitives\ValueObjects\Length
 
 ```text
@@ -645,6 +665,23 @@ public function __construct(Nvl\Primitives\ValueObjects\Money $money, Nvl\Primit
 public readonly Nvl\Primitives\ValueObjects\Money $money
 public readonly Nvl\Primitives\ValueObjects\CurrencyCode $recordCurrency
 public readonly bool $wasMigrated
+```
+
+## Nvl\Primitives\ValueObjects\TimezoneId
+
+```text
+final readonly class Nvl\Primitives\ValueObjects\TimezoneId implements Nvl\Primitives\Contracts\ScalarPrimitive
+public function __toString(): string
+public static function castUsing(array $arguments): Illuminate\Contracts\Database\Eloquent\CastsAttributes
+@param list<string> $arguments
+@return CastsAttributes<(static | null), (static | string | int | null)>
+resolved @return Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\TimezoneId | null), (Nvl\Primitives\ValueObjects\TimezoneId | string | int | null)>
+public function equals(Nvl\Primitives\Contracts\Primitive $other): bool
+public static function from(string $value): static
+public function jsonSerialize(): string
+public function storageValue(): string
+public function timezone(): DateTimeZone
+public static function tryFrom(string $value): ?self
 ```
 
 ## Nvl\Primitives\ValueObjects\Url

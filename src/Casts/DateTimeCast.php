@@ -9,6 +9,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 use DateTimeZone;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use Nvl\Primitives\Exceptions\InvalidPrimitive;
@@ -22,7 +23,7 @@ use Nvl\Primitives\ValueObjects\TimezoneId;
  *
  * @api
  */
-final readonly class DateTimeCast implements CastsAttributes
+final readonly class DateTimeCast implements CastsAttributes, ComparesCastableAttributes
 {
     private DateTimeZone $timezone;
 
@@ -69,6 +70,22 @@ final readonly class DateTimeCast implements CastsAttributes
         $this->wallTime($wall);
 
         return $wall;
+    }
+
+    /**
+     * Treat stored values as equal when they denote the same instant, whatever their SQL formatting.
+     */
+    public function compare(Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
+    {
+        if ($firstValue === null || $secondValue === null) {
+            return $firstValue === $secondValue;
+        }
+
+        try {
+            return $this->instant($firstValue, assigning: true)->equals($this->instant($secondValue, assigning: true));
+        } catch (InvalidPrimitive) {
+            return false;
+        }
     }
 
     private function instant(mixed $value, bool $assigning = false): DateTimeValue

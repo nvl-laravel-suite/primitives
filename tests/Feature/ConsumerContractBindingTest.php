@@ -10,6 +10,8 @@ use Nvl\Primitives\Contracts\ExchangeRateProvider;
 use Nvl\Primitives\Providers\PrimitivesServiceProvider;
 use Nvl\Primitives\Services\ConfiguredExchangeRateProvider;
 use Nvl\Primitives\Tests\TestCase;
+use Nvl\Primitives\ValueObjects\Identifier;
+use Nvl\Primitives\ValueObjects\TimezoneId;
 
 if (! in_array(dirname(__DIR__).'/Pest.php', get_included_files(), true)) {
     uses(TestCase::class);
@@ -35,5 +37,15 @@ test('Primitives preserves an early host exchange rate adapter through provider 
     } finally {
         Container::setInstance($this->app);
         $consumer->flush();
+    }
+});
+
+test('published consumer catalog lists the advertised identifier and timezone primitives', function (): void {
+    $catalog = json_decode(file_get_contents(dirname(__DIR__, 2).'/resources/consumer-api.json'), true, flags: JSON_THROW_ON_ERROR);
+
+    foreach ([Identifier::class => ['from', 'tryFrom', 'storageValue'], TimezoneId::class => ['from', 'tryFrom', 'timezone']] as $symbol => $methods) {
+        expect((string) (new ReflectionClass($symbol))->getDocComment())->toContain('@api')
+            ->and($catalog['symbols'])->toHaveKey($symbol)
+            ->and($catalog['symbols'][$symbol]['methods'])->toContain(...$methods);
     }
 });

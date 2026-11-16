@@ -53,7 +53,7 @@ protected function casts(): array
 }
 ```
 
-Money's default JSON representation is `{"minor":"2499","currency":"EUR"}`. Fixed-currency columns may use `Money::class.':minor,EUR'` or `Money::class.':decimal,EUR'`; an explicit `:json,EUR` enforces that currency on both assignment and hydration. Variable-currency money needs JSON or host-owned amount/currency columns, never a guessed default currency.
+Money's default JSON representation is `{"minor":"2499","currency":"EUR"}`. Fixed-currency columns may use `Money::class.':minor,EUR'` or `Money::class.':decimal,EUR'`; an explicit `:json,EUR` enforces that currency on both assignment and hydration. Paired decimal and minor columns use `:decimal,EUR,price_minor`; append `,,strict` when the minor column is authoritative and a stale or unselected decimal must never be returned. Variable-currency money needs JSON or host-owned amount/currency columns, never a guessed default currency.
 
 Null attributes round-trip as null. A host partial update must preserve omitted fields and explicitly assign null only to a nullable column. Scalar assignment and `ValidPrimitive` accept exact strings/integers, rejecting booleans/floats before coercion. Scalar hydration can accept native database floats where the value supports them, but choose string storage for exact ratios/weights. Array casts require their declared array shape. These casts do not authorize writes or create package-managed models.
 

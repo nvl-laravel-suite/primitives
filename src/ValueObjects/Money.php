@@ -135,8 +135,9 @@ final readonly class Money implements ArrayPrimitive
         return new MoneyCast(
             mode: $arguments[0] ?? 'json',
             currency: $arguments[1] ?? null,
-            minorColumn: $arguments[2] ?? null,
-            decimalColumn: $arguments[3] ?? null,
+            minorColumn: ($arguments[2] ?? '') !== '' ? $arguments[2] : null,
+            decimalColumn: ($arguments[3] ?? '') !== '' ? $arguments[3] : null,
+            authority: $arguments[4] ?? null,
         );
     }
 

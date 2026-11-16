@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Nvl\Primitives\Casts\ArrayPrimitiveCast;
 use Nvl\Primitives\Casts\DateTimeCast;
 use Nvl\Primitives\Casts\MoneyCast;
@@ -267,4 +269,95 @@ it('persists both money columns and timestamp modes through Eloquent', function 
     $model->update(['record_price' => Money::minor(246, 'BGN')]);
     expect((string) $model->getRawOriginal('record_price'))->toBe('2.46')
         ->and((string) $model->getRawOriginal('record_price_minor'))->toBe('246');
+});
+
+it('never falls back from a required minor twin', function (): void {
+    $id = PrimitiveTestModel::query()->create(['strict_price' => Money::of('82.56', 'EUR')])->getKey();
+    $store = static fn (?string $decimal, ?int $minor) => DB::table('primitive_test_models')->where('id', $id)
+        ->update(['strict_price' => $decimal, 'strict_price_minor' => $minor]);
+    $load = static fn (array $columns = ['*']) => PrimitiveTestModel::query()->select($columns)->findOrFail($id);
+
+    $store('90.00', 8256);
+    expect($load()->strict_price->amount())->toBe('82.56')
+        ->and(fn () => $load(['id', 'strict_price'])->strict_price)->toThrow(InvalidArgumentException::class, 'to be loaded')
+        ->and($load(['id', 'strict_price_minor'])->strict_price->amount())->toBe('82.56');
+
+    $store('90.00', 0);
+    expect($load()->strict_price->amount())->toBe('0.00');
+
+    $store('90.00', null);
+    expect(fn () => $load()->strict_price)->toThrow(InvalidArgumentException::class, 'null authoritative minor column');
+
+    $store(null, null);
+    expect($load()->strict_price)->toBeNull();
+
+    $unsaved = new PrimitiveTestModel;
+    $unsaved->strict_price = '90.00';
+    expect($unsaved->getAttributes())->toMatchArray(['strict_price' => '90.00', 'strict_price_minor' => '9000'])
+        ->and($unsaved->strict_price->amount())->toBe('90.00')
+        ->and(fn () => (new PrimitiveTestModel)->setRawAttributes(['strict_price' => '90.00'])->strict_price)
+        ->toThrow(InvalidArgumentException::class, 'to be loaded')
+        ->and(fn () => new MoneyCast('decimal', 'EUR', authority: 'strict'))->toThrow(InvalidArgumentException::class, 'requires a minor column')
+        ->and(fn () => new MoneyCast('minor', 'EUR', authority: 'loose'))->toThrow(InvalidArgumentException::class, 'Unsupported money cast authority');
+});
+
+it('reassigning an equivalent SQL instant stays clean', function (string $cast, string $stored): void {
+    $model = (new class extends Model {})->mergeCasts(['occurred_at' => DateTimeCast::class.':'.$cast]);
+    $model->setRawAttributes(['occurred_at' => $stored], true);
+
+    $model->occurred_at = $model->occurred_at;
+    expect($model->isDirty('occurred_at'))->toBeFalse();
+
+    $model->occurred_at = DateTimeValue::from('2026-01-01T12:00:00.000001Z');
+    expect($model->isDirty('occurred_at'))->toBeTrue();
+
+    $model->occurred_at = null;
+    expect($model->isDirty('occurred_at'))->toBeTrue();
+
+    $model->setRawAttributes(['occurred_at' => null], true);
+    $model->occurred_at = null;
+    expect($model->isDirty('occurred_at'))->toBeFalse();
+
+    $model->occurred_at = DateTimeValue::from('2026-01-01T12:00:00Z');
+    expect($model->isDirty('occurred_at'))->toBeTrue();
+})->with([
+    'timestamp as value' => ['timestamp,UTC,value', '2026-01-01 12:00:00'],
+    'timestamp as carbon with fraction' => ['timestamp,UTC,carbon', '2026-01-01 12:00:00.5'],
+    'local timestamp as value' => ['timestamp,Europe/Sofia,value', '2026-01-01 14:00:00'],
+    'timestamptz as value' => ['timestamptz,UTC,value', '2026-01-01 12:00:00+00'],
+    'timestamptz as carbon with fraction' => ['timestamptz,UTC,carbon', '2026-01-01 12:00:00.5+00'],
+    'timestamptz from a non-UTC session' => ['timestamptz,UTC,value', '2026-01-01 14:00:00+02'],
+    'timestamptz carbon from a non-UTC session' => ['timestamptz,UTC,carbon', '2026-01-01 14:00:00.25+02'],
+]);
+
+it('round trips exact primitives through PostgreSQL storage', function (): void {
+    $large = '9007199254740993';
+    $instant = DateTimeValue::from('2026-10-25T03:30:00.253421+02:00');
+    $created = PrimitiveTestModel::query()->create([
+        'currency' => 'BGN',
+        'money' => Money::minor($large, 'EUR'),
+        'record_price' => Money::minor($large, 'BGN'),
+        'strict_price' => Money::minor($large, 'EUR'),
+        'sql_timestamp' => $instant,
+        'sql_timestamp_tz' => $instant,
+    ]);
+    $model = PrimitiveTestModel::query()->findOrFail($created->getKey());
+
+    expect(Str::isUuid($model->getKey()))->toBeTrue()
+        ->and((string) $model->getRawOriginal('record_price_minor'))->toBe($large)
+        ->and((string) $model->getRawOriginal('strict_price_minor'))->toBe($large)
+        ->and($model->money->minorAmount())->toBe($large)
+        ->and($model->record_price->minorAmount())->toBe($large)
+        ->and($model->strict_price->minorAmount())->toBe($large)
+        ->and($model->sql_timestamp->equals($instant))->toBeTrue()
+        ->and($model->sql_timestamp_tz->equalTo($instant->carbon()))->toBeTrue();
+
+    if ($model->getConnection()->getDriverName() === 'pgsql') {
+        expect($model->getConnection()->selectOne('SHOW TIME ZONE')->TimeZone)->toBe('Europe/Sofia')
+            ->and($model->getRawOriginal('sql_timestamp_tz'))->toBe('2026-10-25 03:30:00.253421+02');
+    }
+
+    $model->sql_timestamp = $model->sql_timestamp;
+    $model->sql_timestamp_tz = $model->sql_timestamp_tz;
+    expect($model->isDirty())->toBeFalse();
 });

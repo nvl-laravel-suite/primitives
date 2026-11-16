@@ -29,18 +29,28 @@ abstract class TestCase extends Orchestra
         ];
     }
 
+    /**
+     * Run PostgreSQL sessions outside UTC so casts must not depend on the session time zone.
+     */
+    protected function defineEnvironment($app): void
+    {
+        $app['config']->set('database.connections.pgsql.timezone', 'Europe/Sofia');
+    }
+
     protected function defineDatabaseMigrationsAfterDatabaseRefreshed(): void
     {
         Schema::create('primitive_test_models', function (Blueprint $table): void {
-            $table->id();
+            $table->uuid('id')->primary();
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
             $table->json('money')->nullable();
             $table->string('money_minor')->nullable();
             $table->decimal('money_decimal', 12, 2)->nullable();
             $table->string('currency')->nullable();
-            $table->decimal('record_price', 12, 2)->nullable();
+            $table->decimal('record_price', 20, 2)->nullable();
             $table->bigInteger('record_price_minor')->nullable();
+            $table->decimal('strict_price', 20, 2)->nullable();
+            $table->bigInteger('strict_price_minor')->nullable();
             $table->json('coordinates')->nullable();
             $table->json('postal_address')->nullable();
             $table->string('date_time')->nullable();
