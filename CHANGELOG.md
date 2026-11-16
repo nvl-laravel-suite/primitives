@@ -5,6 +5,8 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [7.3.0] - 2026-11-17
+
 ### Added
 
 - `MoneyCast` accepts a fifth `strict` argument (`Money::class.':decimal,EUR,price_minor,,strict'`) that makes the minor column the only source: it never falls back to the decimal, throws when the minor column is not loaded beside a loaded decimal, and rejects a null minor column beside a decimal. An empty column argument now means the default column.
@@ -13,6 +15,12 @@ All notable changes to `nvl/primitives` are documented here.
 ### Fixed
 
 - `DateTimeCast` implements `ComparesCastableAttributes`, so reassigning an equal instant no longer marks the model dirty when PostgreSQL hydrates a different textual form (`+00` versus `.000000+00:00`, a non-UTC session offset or unpadded fractions). Null is equal only to null.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- implement the Final spec audit for one release
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.2.0] - 2026-11-16
 
