@@ -101,6 +101,8 @@ For an email request rule use `new \Nvl\Primitives\Rules\ValidPrimitive(EmailAdd
 
 `ReferenceCatalog::countries($search, $locale, $limit)`, `currencies`, `languages` and `locales` return bounded lists with `code`, `label` and scalar `metadata`. ISO data comes from Symfony Intl; application locales come from Core's `LocaleCatalog`. `cities`/`banks` use `nvl-primitives.reference` entries or a host-owned source; the package does not invent a universal city/bank database. Check the API limit contract instead of returning an unbounded select list.
 
+For record-backed references, the host implements `Nvl\Primitives\Contracts\ReferenceDirectory` (`find()` and bounded `search()` returning `id`, `code`, `label` and scalar `metadata`). Implement the optional `ReferenceCodeDirectory` extension when records also have a stable code; it adds `findByCode()`. Use Core's `TextMatcher` for search terms and keep the builder it returns.
+
 ## Verification and absence
 
 Test money exactness/rounding, wrong currencies, missing/stale rates, canonical storage, null cast round trips, contact normalization and model input rejection. Test the actual phone/IBAN/ISO library for enabled features and boot independently when those optional libraries are absent. No actor, revision, transaction, recovery or Ownership service is implied by constructing a value; host domain operations supply those guarantees. Primitives adds no maintenance Artisan command or database schema.

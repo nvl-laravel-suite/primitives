@@ -5,6 +5,16 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+### Added
+
+- Opt into numbers with `new PresentationOptions(numeric: true)`. Unsafe integers throw. Strings stay the default.
+- Added optional `ReferenceCodeDirectory`; existing `ReferenceDirectory` implementations need no change.
+
+### Changed
+
+- Arithmetic now carries compatible source amounts. Totals that mix source currencies drop provenance. Pass a rounding mode when either currency needs one.
+- `MoneyPresenter` output for converted arithmetic results now includes `recordCurrency` and `recordCents`.
+
 ## [7.1.0] - 2026-11-16
 
 ### Highlights

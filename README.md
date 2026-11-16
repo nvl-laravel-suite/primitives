@@ -171,11 +171,13 @@ $formatter->format($total, 'de-DE');           // locale-aware with ext-intl
 
 Currency is always explicit. An unrepresentable amount or operation requires a suitable rounding mode. Arithmetic requires matching currencies. `MoneyFormatter` uses its injected configuration repository and returns exact `amount currency` text when native `ext-intl` is unavailable or the minor units exceed the formatter's safe precision.
 
-Conversion chains keep their original exact value through `Money::source()`. Use `withSource()` when rehydrating separately persisted provenance. Arithmetic and the canonical `toArray()` payload represent the current value.
+Conversion chains keep their original exact value through `Money::source()`. Use `withSource()` when rehydrating separately persisted provenance. The canonical `toArray()` payload represents the current value.
+
+Arithmetic carries the source amount along. `add()` and `subtract()` combine source amounts in the same source currency and drop provenance when the source currencies differ; no rate is ever invented. `multiply()`, `divide()`, `absolute()` and `negate()` apply the same operation to the source amount, rounding at the source currency's scale with the same rounding mode, so an inexact source result throws under the default `RoundingMode::Unnecessary`. `allocate()` and `split()` divide each side separately with the same ratios or parts and pair the pieces by position; each side conserves its own minor units, so a piece's effective rate may differ slightly.
 
 `MoneyStorage::prepare()` selects a storage amount and currency through `StoragePolicy`. `Preserve` converts to the record currency and requires explicit rounding for inexact conversion. `Adopt` returns the input currency for the host to persist with the amount. `Require` demands a currency match. `MigrateParent` signals a required parent update through `ParentCurrencyMigrationRequired`. The application owns persistence and any parent migration.
 
-`MoneyPresenter::present()` returns `amount`, `cents`, `currency` and `formatted`, with optional `recordCurrency`, `recordCents` and `pair`. Pass `PresentationOptions` to select the locale or supply an explicit record or paired value. The exact numeric fields are strings. Applications own their DTO conversions.
+`MoneyPresenter::present()` returns `amount`, `cents`, `currency` and `formatted`, with optional `recordCurrency`, `recordCents` and `pair`. Pass `PresentationOptions` to select the locale or supply an explicit record or paired value. The exact numeric fields are strings by default. Pass `new PresentationOptions(numeric: true)` to receive `amount` as a float and `cents`, `recordCents` and the pair's `cents` as integers; minor units beyond JavaScript's safe integer range (±9007199254740991) throw `InvalidPrimitive`. The numeric `amount` is for display only; keep `cents` for exact work. Applications own their DTO conversions.
 
 ### Currency conversion
 
@@ -274,6 +276,74 @@ Decimal input may use scientific notation with at most three exponent digits (`1
 Use `DateTimeCast::class.':timestamp,UTC'` for SQL timestamps without offsets and `DateTimeCast::class.':timestamptz,UTC'` for offset-aware storage. Use column precision 6 to keep microseconds. A named storage timezone for a bare timestamp requires an unambiguous wall time. Add the third argument `carbon` to hydrate `CarbonImmutable` directly.
 
 Implement `ReferenceDirectory` in the host for record-backed references that have database IDs. Its `find()` and bounded `search()` return the record identity, display label and scalar metadata. `ReferenceCatalog` remains available for ISO and configured lookups.
+
+Implement the optional `ReferenceCodeDirectory` extension instead when records also have a stable code; it adds `findByCode()`. A host binds an Eloquent-backed directory like this:
+
+```php
+use App\Models\Warehouse;
+use InvalidArgumentException;
+use Nvl\Primitives\Contracts\ReferenceCodeDirectory;
+use Nvl\Primitives\Contracts\ReferenceDirectory;
+use Nvl\Support\Contracts\TextMatcher;
+
+final class WarehouseDirectory implements ReferenceCodeDirectory
+{
+    public function __construct(private readonly TextMatcher $text) {}
+
+    public function find(string $catalog, string $id): ?array
+    {
+        return $catalog === 'warehouses' && ctype_digit($id)
+            ? $this->record(Warehouse::query()->whereKey($id)->first())
+            : null;
+    }
+
+    public function findByCode(string $catalog, string $code): ?array
+    {
+        return $catalog === 'warehouses' ? $this->record(Warehouse::query()->where('code', $code)->first()) : null;
+    }
+
+    public function search(string $catalog, ?string $query = null, int $limit = 50): array
+    {
+        if ($limit < 1 || $limit > 100) {
+            throw new InvalidArgumentException('The reference search limit must be between 1 and 100.');
+        }
+        if ($catalog !== 'warehouses') {
+            return [];
+        }
+        $term = trim($query ?? '');
+        $warehouses = Warehouse::query();
+        if ($term !== '') {
+            $warehouses->where(function ($builder) use ($term): void {
+                $builder->setQuery($this->text->contains($builder->getQuery(), 'name', $term));
+                $builder->setQuery($this->text->contains($builder->getQuery(), 'code', $term, boolean: 'or'));
+            });
+        }
+
+        return $warehouses
+            ->orderBy('name')->orderBy('id')
+            ->limit($limit)
+            ->get()
+            ->map(fn (Warehouse $warehouse): array => $this->record($warehouse))
+            ->all();
+    }
+
+    private function record(?Warehouse $warehouse): ?array
+    {
+        return $warehouse === null ? null : [
+            'id' => (string) $warehouse->getKey(),
+            'code' => $warehouse->code,
+            'label' => $warehouse->name,
+            'metadata' => ['active' => $warehouse->active],
+        ];
+    }
+}
+
+// In a service provider
+$this->app->bind(ReferenceDirectory::class, WarehouseDirectory::class);
+$this->app->bind(ReferenceCodeDirectory::class, WarehouseDirectory::class);
+```
+
+Core's `TextMatcher` matches `%` and `_` literally and folds case on PostgreSQL and SQLite; always use the builder it returns. Keep `search()` bounded and ordered.
 
 `Url` validates URL syntax and represents private or loopback hosts too. It supplies no DNS, redirect, network allowlist or SSRF protection; remote fetchers must enforce those policies separately. `EmailAddress` likewise does not establish deliverability or a public destination.
 

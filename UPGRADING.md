@@ -6,6 +6,16 @@ Light requires PHP 8.4 and Laravel 13. Replace retired package Actions, transpor
 
 Upgrade the selected family together. Preserve stored identities, migration ownership, source connections, queue state and operation recovery journals. Review and apply the relevant storage/adoption procedure before accepting writes; installing new code alone does not migrate existing data.
 
+## Money provenance through arithmetic (7.x)
+
+Arithmetic now carries compatible source amounts. Totals that mix source currencies drop provenance. Pass a rounding mode when either currency needs one.
+
+`multiply()` and `divide()` apply the same operation to the source amount at its own currency scale, so a value that was exact before can now throw `InvalidPrimitive` under the default `RoundingMode::Unnecessary` when only its source side is inexact. `allocate()` and `split()` divide each side separately and pair the pieces; each side conserves its own minor units, so a piece's effective rate may differ slightly from the original rate.
+
+Because results keep their source, `MoneyPresenter::present()` now adds `recordCurrency` and `recordCents` to sums, products and allocated pieces of converted money. A total seeded with `Money::zero()` has no source of its own and drops provenance; start a total from its first item to keep it.
+
+`MoneyValue` now types `amount` as `string|float` and `cents` as `string|int` to cover numeric output. Default output is still strings; narrow the type where static analysis needs it. The numeric `amount` is a float for display and loses exactness beyond about 15 significant digits; keep `cents` for exact work.
+
 ## Historical upgrade notes
 
 The following sections describe pre-Light releases and their old APIs, compatibility windows and commands. They remain useful for understanding existing installations, but are not Light setup instructions. The old Tenancy bridge, DTO/Action contracts, package HTTP and type generation are retired in Light.

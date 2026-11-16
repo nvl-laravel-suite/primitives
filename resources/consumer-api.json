@@ -89,6 +89,17 @@
             "properties": [],
             "constants": []
         },
+        "Nvl\\Primitives\\Contracts\\ReferenceCodeDirectory": {
+            "kind": "interface",
+            "file": "src/Contracts/ReferenceCodeDirectory.php",
+            "methods": [
+                "find",
+                "findByCode",
+                "search"
+            ],
+            "properties": [],
+            "constants": []
+        },
         "Nvl\\Primitives\\Contracts\\ReferenceDirectory": {
             "kind": "interface",
             "file": "src/Contracts/ReferenceDirectory.php",
@@ -548,6 +559,7 @@
             ],
             "properties": [
                 "locale",
+                "numeric",
                 "pair",
                 "record"
             ],

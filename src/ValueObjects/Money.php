@@ -178,11 +178,21 @@ final readonly class Money implements ArrayPrimitive
 
     /**
      * Add money in the same currency.
+     *
+     * Source amounts are summed when both share a source currency; otherwise provenance is dropped.
      */
     public function add(self $other): self
     {
         try {
-            return new self($this->money->plus($other->money));
+            $hasProvenance = $this->provenance !== null || $other->provenance !== null;
+            $source = $hasProvenance && (string) $this->source()->currency() === (string) $other->source()->currency()
+                ? $this->source()->money->plus($other->source()->money)
+                : null;
+
+            return new self(
+                $this->money->plus($other->money),
+                $source === null ? null : new self($source),
+            );
         } catch (MoneyException|MathException $exception) {
             throw InvalidPrimitive::for('money arithmetic', $exception->getMessage(), $exception);
         }
@@ -190,11 +200,21 @@ final readonly class Money implements ArrayPrimitive
 
     /**
      * Subtract money in the same currency.
+     *
+     * Source amounts are subtracted when both share a source currency; otherwise provenance is dropped.
      */
     public function subtract(self $other): self
     {
         try {
-            return new self($this->money->minus($other->money));
+            $hasProvenance = $this->provenance !== null || $other->provenance !== null;
+            $source = $hasProvenance && (string) $this->source()->currency() === (string) $other->source()->currency()
+                ? $this->source()->money->minus($other->source()->money)
+                : null;
+
+            return new self(
+                $this->money->minus($other->money),
+                $source === null ? null : new self($source),
+            );
         } catch (MoneyException|MathException $exception) {
             throw InvalidPrimitive::for('money arithmetic', $exception->getMessage(), $exception);
         }
@@ -202,6 +222,8 @@ final readonly class Money implements ArrayPrimitive
 
     /**
      * Multiply the amount, rejecting inexact results unless rounding is supplied.
+     *
+     * The source amount is multiplied with the same rounding mode at its own currency scale.
      */
     public function multiply(
         string|int $multiplier,
@@ -211,7 +233,12 @@ final readonly class Money implements ArrayPrimitive
         DecimalInput::assertBounded($multiplier, 'money arithmetic');
 
         try {
-            return new self($this->money->multipliedBy($multiplier, $roundingMode));
+            $source = $this->provenance?->money->multipliedBy($multiplier, $roundingMode);
+
+            return new self(
+                $this->money->multipliedBy($multiplier, $roundingMode),
+                $source === null ? null : new self($source),
+            );
         } catch (MoneyException|MathException $exception) {
             throw InvalidPrimitive::for('money arithmetic', $exception->getMessage(), $exception);
         }
@@ -219,6 +246,8 @@ final readonly class Money implements ArrayPrimitive
 
     /**
      * Divide the amount, rejecting inexact results unless rounding is supplied.
+     *
+     * The source amount is divided with the same rounding mode at its own currency scale.
      */
     public function divide(
         string|int $divisor,
@@ -228,7 +257,12 @@ final readonly class Money implements ArrayPrimitive
         DecimalInput::assertBounded($divisor, 'money arithmetic');
 
         try {
-            return new self($this->money->dividedBy($divisor, $roundingMode));
+            $source = $this->provenance?->money->dividedBy($divisor, $roundingMode);
+
+            return new self(
+                $this->money->dividedBy($divisor, $roundingMode),
+                $source === null ? null : new self($source),
+            );
         } catch (MoneyException|MathException $exception) {
             throw InvalidPrimitive::for('money arithmetic', $exception->getMessage(), $exception);
         }
@@ -289,7 +323,7 @@ final readonly class Money implements ArrayPrimitive
      */
     public function absolute(): self
     {
-        return new self($this->money->abs());
+        return new self($this->money->abs(), $this->provenance?->absolute());
     }
 
     /**
@@ -297,7 +331,7 @@ final readonly class Money implements ArrayPrimitive
      */
     public function negate(): self
     {
-        return new self($this->money->negated());
+        return new self($this->money->negated(), $this->provenance?->negate());
     }
 
     /**
@@ -315,6 +349,9 @@ final readonly class Money implements ArrayPrimitive
     /**
      * Allocate the amount proportionally while preserving every minor unit.
      *
+     * A source amount is allocated separately with the same ratios. Each side conserves its own
+     * minor units, so the effective rate of an individual piece may differ slightly.
+     *
      * @param  list<string|int>  $ratios
      * @return list<self>
      */
@@ -323,6 +360,7 @@ final readonly class Money implements ArrayPrimitive
         try {
             return $this->wrapMoneyList(
                 BrickMoneyCompatibility::allocate($this->money, $ratios),
+                $this->provenance === null ? null : BrickMoneyCompatibility::allocate($this->provenance->money, $ratios),
             );
         } catch (MoneyException|MathException|\InvalidArgumentException $exception) {
             throw InvalidPrimitive::for('money allocation', $exception->getMessage(), $exception);
@@ -331,6 +369,9 @@ final readonly class Money implements ArrayPrimitive
 
     /**
      * Split the amount equally while preserving every minor unit.
+     *
+     * A source amount is split separately into the same number of parts. Each side conserves its
+     * own minor units, so the effective rate of an individual piece may differ slightly.
      *
      * @return list<self>
      */
@@ -343,6 +384,7 @@ final readonly class Money implements ArrayPrimitive
         try {
             return $this->wrapMoneyList(
                 BrickMoneyCompatibility::split($this->money, $parts),
+                $this->provenance === null ? null : BrickMoneyCompatibility::split($this->provenance->money, $parts),
             );
         } catch (MoneyException|MathException|\InvalidArgumentException $exception) {
             throw InvalidPrimitive::for('money split', $exception->getMessage(), $exception);
@@ -358,22 +400,37 @@ final readonly class Money implements ArrayPrimitive
     }
 
     /**
+     * Wrap allocated pieces, zipping each primary piece with the source piece at the same position.
+     *
      * @return list<self>
      */
-    private function wrapMoneyList(mixed $values): array
+    private function wrapMoneyList(mixed $values, mixed $sources = null): array
     {
-        if (! is_array($values)) {
+        if (! is_array($values) || ($sources !== null && ! is_array($sources))) {
             throw InvalidPrimitive::for('money allocation', 'Brick Money returned an invalid allocation result.');
+        }
+
+        $values = array_values($values);
+        $sources = $sources === null ? null : array_values($sources);
+
+        if ($sources !== null && count($sources) !== count($values)) {
+            throw InvalidPrimitive::for('money allocation', 'the source allocation does not match the primary allocation.');
         }
 
         $wrapped = [];
 
-        foreach ($values as $value) {
+        foreach ($values as $index => $value) {
+            $source = $sources === null ? null : $sources[$index];
+
             if (! $value instanceof BrickMoney) {
                 throw InvalidPrimitive::for('money allocation', 'Brick Money returned an invalid allocation value.');
             }
 
-            $wrapped[] = new self($value);
+            if ($source !== null && ! $source instanceof BrickMoney) {
+                throw InvalidPrimitive::for('money allocation', 'Brick Money returned an invalid allocation value.');
+            }
+
+            $wrapped[] = new self($value, $source === null ? null : new self($source));
         }
 
         return $wrapped;

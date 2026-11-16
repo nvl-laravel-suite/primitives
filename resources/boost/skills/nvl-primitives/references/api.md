@@ -14,6 +14,7 @@ Search for the relevant fully qualified service or contract and read only its ma
 - `Nvl\Primitives\Contracts\HasRecordCurrency`
 - `Nvl\Primitives\Contracts\Primitive`
 - `Nvl\Primitives\Contracts\RecordCurrencyResolver`
+- `Nvl\Primitives\Contracts\ReferenceCodeDirectory`
 - `Nvl\Primitives\Contracts\ReferenceDirectory`
 - `Nvl\Primitives\Enums\PrimitivesResponseCode`
 - `Nvl\Primitives\Enums\StoragePolicy`
@@ -140,6 +141,21 @@ public abstract function equals(Nvl\Primitives\Contracts\Primitive $other): bool
 interface Nvl\Primitives\Contracts\RecordCurrencyResolver
 public abstract function resolve(Illuminate\Database\Eloquent\Model $model, string $attribute, array $attributes): Nvl\Primitives\ValueObjects\CurrencyCode
 @param array<string, mixed> $attributes
+```
+
+## Nvl\Primitives\Contracts\ReferenceCodeDirectory
+
+```text
+interface Nvl\Primitives\Contracts\ReferenceCodeDirectory extends Nvl\Primitives\Contracts\ReferenceDirectory
+public abstract function find(string $catalog, string $id): ?array
+@return (ReferenceRecord | null)
+resolved @return (array{id: string, code: ?string, label: string, metadata: array<string, (bool | int | float | string | null)>} | null)
+public abstract function findByCode(string $catalog, string $code): ?array
+@return (ReferenceRecord | null)
+resolved @return (array{id: string, code: ?string, label: string, metadata: array<string, (bool | int | float | string | null)>} | null)
+public abstract function search(string $catalog, ?string $query=null, int $limit=50): array
+@return list<ReferenceRecord>
+resolved @return list<array{id: string, code: ?string, label: string, metadata: array<string, (bool | int | float | string | null)>}>
 ```
 
 ## Nvl\Primitives\Contracts\ReferenceDirectory
@@ -300,8 +316,8 @@ public function format(Nvl\Primitives\ValueObjects\Money $money, ?string $locale
 final readonly class Nvl\Primitives\Services\MoneyPresenter
 public function __construct(Nvl\Primitives\Services\MoneyFormatter $formatter): mixed
 public function present(Nvl\Primitives\ValueObjects\Money $money, ?Nvl\Primitives\ValueObjects\PresentationOptions $options=null): array
-@return array{amount: string, cents: string, currency: string, formatted: string, recordCurrency?: string, recordCents?: string, pair?: MoneyValue}
-resolved @return array{amount: string, cents: string, currency: string, formatted: string, recordCurrency?: string, recordCents?: string, pair?: array{amount: string, cents: string, currency: string, formatted: string}}
+@return array{amount: (string | float), cents: (string | int), currency: string, formatted: string, recordCurrency?: string, recordCents?: (string | int), pair?: MoneyValue}
+resolved @return array{amount: (string | float), cents: (string | int), currency: string, formatted: string, recordCurrency?: string, recordCents?: (string | int), pair?: array{amount: (string | float), cents: (string | int), currency: string, formatted: string}}
 ```
 
 ## Nvl\Primitives\Services\MoneyStorage
@@ -614,8 +630,9 @@ public readonly ?string $postalCode
 
 ```text
 final readonly class Nvl\Primitives\ValueObjects\PresentationOptions
-public function __construct(?string $locale=null, ?Nvl\Primitives\ValueObjects\Money $record=null, ?Nvl\Primitives\ValueObjects\Money $pair=null): mixed
+public function __construct(?string $locale=null, ?Nvl\Primitives\ValueObjects\Money $record=null, ?Nvl\Primitives\ValueObjects\Money $pair=null, bool $numeric=false): mixed
 public readonly ?string $locale
+public readonly bool $numeric
 public readonly ?Nvl\Primitives\ValueObjects\Money $pair
 public readonly ?Nvl\Primitives\ValueObjects\Money $record
 ```

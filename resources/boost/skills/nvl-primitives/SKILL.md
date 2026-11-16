@@ -40,6 +40,8 @@ Exchange rates are directed positive decimal strings; configure every required d
 The host binds live/database rate acquisition; values do not call remote providers.
 Return canonical strings or native `toArray()` projections, not vendor objects.
 Conversion chains retain the original value through `Money::source()`. Persist that provenance explicitly when the host needs it after reloading.
+Arithmetic carries compatible source amounts; mixing source currencies drops provenance. Multiply/divide also round the source side, so pass a rounding mode when either currency needs one.
+`MoneyPresenter` returns exact strings by default. Numeric output from `new PresentationOptions(numeric: true)` is for display only and rejects minor units beyond the JavaScript safe integer range.
 
 ## Persist and validate
 

@@ -331,3 +331,70 @@ it('rejects an invalid configured exchange-rate implementation', function (): vo
     );
     expect(app(ExchangeRateProvider::class))->toBeInstanceOf(ConfiguredExchangeRateProvider::class);
 });
+
+it('presents money as exact strings by default', function (): void {
+    $presented = app(MoneyPresenter::class)->present(
+        Money::minor(125, 'GBP')->withSource(Money::minor(250, 'EUR')),
+        new PresentationOptions(locale: 'en', pair: Money::minor(300, 'USD')),
+    );
+
+    expect($presented['amount'])->toBe('1.25')
+        ->and($presented['cents'])->toBe('125')
+        ->and($presented['recordCents'])->toBe('250')
+        ->and($presented['pair']['amount'])->toBe('3.00')
+        ->and($presented['pair']['cents'])->toBe('300');
+});
+
+it('presents opt-in numeric money for the primary, record and pair values', function (): void {
+    $presenter = app(MoneyPresenter::class);
+    $money = Money::minor(125, 'GBP')->withSource(Money::minor(250, 'EUR'));
+    $pair = Money::minor(300, 'USD');
+    $strings = $presenter->present($money, new PresentationOptions(locale: 'en', pair: $pair));
+    $numbers = $presenter->present($money, new PresentationOptions(locale: 'en', pair: $pair, numeric: true));
+
+    expect(array_keys($numbers))->toBe(['amount', 'cents', 'currency', 'formatted', 'recordCurrency', 'recordCents', 'pair'])
+        ->and($numbers['amount'])->toBe(1.25)
+        ->and($numbers['cents'])->toBe(125)
+        ->and($numbers['currency'])->toBe('GBP')
+        ->and($numbers['formatted'])->toBe($strings['formatted'])
+        ->and($numbers['recordCurrency'])->toBe('EUR')
+        ->and($numbers['recordCents'])->toBe(250)
+        ->and($numbers['pair'])->toBe([
+            'amount' => 3.0, 'cents' => 300, 'currency' => 'USD', 'formatted' => $strings['pair']['formatted'],
+        ])
+        ->and($presenter->present(Money::minor(-7, 'EUR'), new PresentationOptions(numeric: true)))->toBe([
+            'amount' => -0.07, 'cents' => -7, 'currency' => 'EUR',
+            'formatted' => $presenter->present(Money::minor(-7, 'EUR'))['formatted'],
+        ]);
+});
+
+it('uses each currency scale for numeric money', function (string $currency, int $minor, float $amount): void {
+    $presented = app(MoneyPresenter::class)->present(Money::minor($minor, $currency), new PresentationOptions(numeric: true));
+
+    expect($presented['cents'])->toBe($minor)
+        ->and($presented['amount'])->toBe($amount);
+})->with([
+    'zero-decimal yen' => ['JPY', 1234, 1234.0],
+    'three-decimal dinar' => ['KWD', 1234, 1.234],
+]);
+
+it('accepts numeric money at the JavaScript safe integer boundary', function (string $minor): void {
+    $presenter = app(MoneyPresenter::class);
+    $money = Money::minor($minor, 'EUR');
+    $presented = $presenter->present($money, new PresentationOptions(record: $money, pair: $money, numeric: true));
+
+    expect($presented['cents'])->toBe((int) $minor)
+        ->and($presented['recordCents'])->toBe((int) $minor)
+        ->and($presented['pair']['cents'])->toBe((int) $minor);
+})->with(['9007199254740991', '-9007199254740991']);
+
+it('rejects numeric money beyond the JavaScript safe integer range', function (string $minor): void {
+    $presenter = app(MoneyPresenter::class);
+    $unsafe = Money::minor($minor, 'EUR');
+    $safe = Money::minor(1, 'EUR');
+
+    expect(fn () => $presenter->present($unsafe, new PresentationOptions(numeric: true)))->toThrow(InvalidPrimitive::class)
+        ->and(fn () => $presenter->present($safe, new PresentationOptions(record: $unsafe, numeric: true)))->toThrow(InvalidPrimitive::class)
+        ->and(fn () => $presenter->present($safe, new PresentationOptions(pair: $unsafe, numeric: true)))->toThrow(InvalidPrimitive::class)
+        ->and($presenter->present($unsafe)['cents'])->toBe($minor);
+})->with(['9007199254740992', '-9007199254740992']);
