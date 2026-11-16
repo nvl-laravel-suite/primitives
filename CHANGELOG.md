@@ -5,6 +5,8 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+## [7.2.0] - 2026-11-16
+
 ### Added
 
 - Opt into numbers with `new PresentationOptions(numeric: true)`. Unsafe integers throw. Strings stay the default.
@@ -14,6 +16,12 @@ All notable changes to `nvl/primitives` are documented here.
 
 - Arithmetic now carries compatible source amounts. Totals that mix source currencies drop provenance. Pass a rounding mode when either currency needs one.
 - `MoneyPresenter` output for converted arithmetic results now includes `recordCurrency` and `recordCents`.
+
+<!-- NVL GENERATED CHANGES START -->
+### Changed
+
+- adoption flow, PostgreSQL proof, release health and 7.2 floors
+<!-- NVL GENERATED CHANGES END -->
 
 ## [7.1.0] - 2026-11-16
 
