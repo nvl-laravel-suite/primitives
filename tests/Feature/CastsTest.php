@@ -361,3 +361,36 @@ it('round trips exact primitives through PostgreSQL storage', function (): void 
     $model->sql_timestamp_tz = $model->sql_timestamp_tz;
     expect($model->isDirty())->toBeFalse();
 });
+
+it('reassigning an equal money amount stays clean whatever the stored formatting', function (string $cast, mixed $stored, Money $same, Money $changed): void {
+    $model = (new class extends Model {})->mergeCasts(['price' => $cast]);
+    $model->setRawAttributes(['price' => $stored], true);
+
+    $model->price = $model->price;
+    expect($model->isDirty('price'))->toBeFalse();
+
+    $model->price = $same;
+    expect($model->isDirty('price'))->toBeFalse();
+
+    $model->price = $changed;
+    expect($model->isDirty('price'))->toBeTrue();
+
+    $model->price = null;
+    expect($model->isDirty('price'))->toBeTrue();
+})->with([
+    'PostgreSQL jsonb text' => [Money::class, '{"minor": "1050", "currency": "EUR"}', Money::of('10.50', 'EUR'), Money::of('10.50', 'USD')],
+    'reordered JSON keys' => [Money::class, '{"currency":"EUR","minor":"1050"}', Money::of('10.5', 'EUR'), Money::of('10.51', 'EUR')],
+    'SQLite real decimal' => [Money::class.':decimal,EUR', 10.5, Money::of('10.50', 'EUR'), Money::of('10.51', 'EUR')],
+    'trimmed decimal text' => [Money::class.':decimal,EUR', '10.5', Money::of('10.50', 'EUR'), Money::of('10.05', 'EUR')],
+]);
+
+it('reassigning an equal structured primitive stays clean whatever the stored JSON formatting', function (): void {
+    $model = (new class extends Model {})->mergeCasts(['location' => Coordinates::class]);
+    $model->setRawAttributes(['location' => '{"longitude": "23.3219", "latitude": "42.6977"}'], true);
+
+    $model->location = $model->location;
+    expect($model->isDirty('location'))->toBeFalse();
+
+    $model->location = Coordinates::fromArray(['latitude' => '42.6978', 'longitude' => '23.3219']);
+    expect($model->isDirty('location'))->toBeTrue();
+});

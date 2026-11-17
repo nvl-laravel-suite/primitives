@@ -5,6 +5,11 @@ All notable changes to `nvl/primitives` are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Money casts compare stored values by money rather than by raw text, so reassigning an equal amount keeps the model clean when PostgreSQL `jsonb` reformats the stored JSON, its keys are reordered, or a decimal column returns `10.5` for `10.50`.
+- Structured primitive casts (`ArrayPrimitiveCast`, for example `Coordinates` and `PostalAddress`) compare stored JSON by primitive equality, so `jsonb` spacing and key order no longer mark an unchanged attribute dirty.
+
 ## [7.3.0] - 2026-11-17
 
 ### Added

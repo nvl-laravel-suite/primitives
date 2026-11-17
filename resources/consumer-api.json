@@ -10,6 +10,7 @@
             "file": "src/Casts/ArrayPrimitiveCast.php",
             "methods": [
                 "__construct",
+                "compare",
                 "get",
                 "set"
             ],
@@ -35,6 +36,7 @@
             "file": "src/Casts/MoneyCast.php",
             "methods": [
                 "__construct",
+                "compare",
                 "get",
                 "set"
             ],

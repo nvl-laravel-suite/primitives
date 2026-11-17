@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Nvl\Primitives\Casts;
 
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use JsonException;
 use Nvl\Primitives\Contracts\ArrayPrimitive;
+use Throwable;
 
 /**
  * Converts one JSON column to and from a specific object-shaped primitive.
@@ -19,7 +21,7 @@ use Nvl\Primitives\Contracts\ArrayPrimitive;
  *
  * @api
  */
-final readonly class ArrayPrimitiveCast implements CastsAttributes
+final readonly class ArrayPrimitiveCast implements CastsAttributes, ComparesCastableAttributes
 {
     /**
      * Create a cast for one structured primitive class.
@@ -58,6 +60,25 @@ final readonly class ArrayPrimitiveCast implements CastsAttributes
 
         /** @var array<string, mixed> $payload */
         return $this->primitiveClass::fromArray($payload);
+    }
+
+    /**
+     * Treat stored JSON as equal when it denotes the same primitive, whatever its key order or spacing.
+     */
+    public function compare(Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
+    {
+        if ($firstValue === null || $secondValue === null) {
+            return $firstValue === $secondValue;
+        }
+
+        try {
+            $first = $this->get($model, $key, $firstValue, []);
+            $second = $this->get($model, $key, $secondValue, []);
+
+            return $first !== null && $second !== null && $first->equals($second);
+        } catch (Throwable) {
+            return false;
+        }
     }
 
     /**

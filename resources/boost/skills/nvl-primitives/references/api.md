@@ -53,7 +53,7 @@ Search for the relevant fully qualified service or contract and read only its ma
 ## Nvl\Primitives\Casts\ArrayPrimitiveCast
 
 ```text
-final readonly class Nvl\Primitives\Casts\ArrayPrimitiveCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
+final readonly class Nvl\Primitives\Casts\ArrayPrimitiveCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes, Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes
 @template TPrimitive of ArrayPrimitive
 resolved @template TPrimitive of Nvl\Primitives\Contracts\ArrayPrimitive
 @implements CastsAttributes<(TPrimitive | null), (TPrimitive | array<string, mixed> | string | null)>
@@ -62,6 +62,7 @@ template Nvl\Primitives\Casts\ArrayPrimitiveCast::TPrimitive of Nvl\Primitives\C
 public function __construct(string $primitiveClass): mixed
 @param class-string<TPrimitive> $primitiveClass
 template Nvl\Primitives\Casts\ArrayPrimitiveCast::TPrimitive of Nvl\Primitives\Contracts\ArrayPrimitive
+public function compare(Illuminate\Database\Eloquent\Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
 public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?Nvl\Primitives\Contracts\ArrayPrimitive
 @param array<string, mixed> $attributes
 @return (TPrimitive | null)
@@ -90,13 +91,14 @@ public readonly bool $withoutObjectCaching
 ## Nvl\Primitives\Casts\MoneyCast
 
 ```text
-final readonly class Nvl\Primitives\Casts\MoneyCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes
+final readonly class Nvl\Primitives\Casts\MoneyCast implements Illuminate\Contracts\Database\Eloquent\CastsAttributes, Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes
 @implements CastsAttributes<(Money | null), (Money | array<string, mixed> | string | int | null)>
 resolved @implements Illuminate\Contracts\Database\Eloquent\CastsAttributes<(Nvl\Primitives\ValueObjects\Money | null), (Nvl\Primitives\ValueObjects\Money | array<string, mixed> | string | int | null)>
 public function __construct(string $mode=self::Json, ?string $currency=null, ?string $minorColumn=null, ?string $decimalColumn=null, ?string $authority=null): mixed
 @param string $mode
 @param (string | null) $currency
 @param (string | null) $authority
+public function compare(Illuminate\Database\Eloquent\Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
 public function get(Illuminate\Database\Eloquent\Model $model, string $key, mixed $value, array $attributes): ?Nvl\Primitives\ValueObjects\Money
 @param array<string, mixed> $attributes
 @throws JsonException

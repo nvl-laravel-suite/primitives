@@ -140,7 +140,7 @@ protected function casts(): array
 }
 ```
 
-Scalar modes accept a `Money` instance or a scalar in the declared units. The cast expects the configured currency. JSON also supports an explicit currency with `Money::class.':json,EUR'`.
+Scalar modes accept a `Money` instance or a scalar in the declared units. The cast expects the configured currency. JSON also supports an explicit currency with `Money::class.':json,EUR'`. Dirty checks compare money, not stored text: reassigning an equal amount keeps the model clean whatever the JSON spacing or key order (for example from PostgreSQL `jsonb`) or decimal padding of the stored value. Structured JSON primitives such as `Coordinates` compare the same way.
 
 Use `Money::class.':decimal,record,price_minor'` on `price` when the model stores both decimal and minor values. The populated minor column is authoritative, including zero. Writes update both columns and assigning null clears both. Use `Money::class.':minor,record,price_minor'` for a model attribute backed only by `price_minor`. An optional fourth argument explicitly names the decimal column; leave it empty to keep the default. Add the fifth argument `strict` to make the minor column the only source, as in `Money::class.':decimal,EUR,price_minor,,strict'`: hydration never falls back to the decimal, throws when a query selects the decimal without the minor column, and rejects a null minor column beside a non-null decimal. Without `strict`, a null minor column still falls back to the decimal. Record currency comes from `HasRecordCurrency::getRecordCurrency()` or the model's raw `currency` attribute. Bind `RecordCurrencyResolver` to map another source, such as an eager-loaded parent.
 

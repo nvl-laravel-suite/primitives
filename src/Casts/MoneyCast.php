@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Nvl\Primitives\Casts;
 
+use Brick\Math\BigDecimal;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Contracts\Database\Eloquent\ComparesCastableAttributes;
 use Illuminate\Database\Eloquent\Model;
 use InvalidArgumentException;
 use JsonException;
 use Nvl\Primitives\Contracts\RecordCurrencyResolver;
 use Nvl\Primitives\ValueObjects\CurrencyCode;
 use Nvl\Primitives\ValueObjects\Money;
+use Throwable;
 
 /**
  * Persists JSON or exact scalar columns in a fixed or record-resolved currency.
@@ -19,7 +22,7 @@ use Nvl\Primitives\ValueObjects\Money;
  *
  * @api
  */
-final readonly class MoneyCast implements CastsAttributes
+final readonly class MoneyCast implements CastsAttributes, ComparesCastableAttributes
 {
     private const string Json = 'json';
 
@@ -213,6 +216,52 @@ final readonly class MoneyCast implements CastsAttributes
         $this->assertCurrency($money, $key, $currency);
 
         return $this->mode === self::Json ? json_encode($money->toArray(), JSON_THROW_ON_ERROR) : $this->scalarStorage($key, $money);
+    }
+
+    /**
+     * Treat stored values as equal when they denote the same money, whatever their JSON or decimal formatting.
+     *
+     * Scalar columns compare their exact amount; the currency lives in the cast or another column.
+     */
+    public function compare(Model $model, string $key, mixed $firstValue, mixed $secondValue): bool
+    {
+        if ($firstValue === null || $secondValue === null) {
+            return $firstValue === $secondValue;
+        }
+
+        try {
+            if ($this->mode === self::Json) {
+                return $this->jsonMoney($firstValue)->equals($this->jsonMoney($secondValue));
+            }
+
+            return $this->exactAmount($firstValue)->isEqualTo($this->exactAmount($secondValue));
+        } catch (Throwable) {
+            return false;
+        }
+    }
+
+    /** @throws JsonException */
+    private function jsonMoney(mixed $value): Money
+    {
+        $payload = is_string($value) ? json_decode($value, true, 512, JSON_THROW_ON_ERROR) : $value;
+        if (! is_array($payload)) {
+            throw new InvalidArgumentException('A money JSON object is required.');
+        }
+
+        /** @var array<string, mixed> $payload */
+        return Money::fromArray($payload);
+    }
+
+    private function exactAmount(mixed $value): BigDecimal
+    {
+        if (is_float($value) && is_finite($value)) {
+            $value = (string) $value;
+        }
+        if (! is_string($value) && ! is_int($value)) {
+            throw new InvalidArgumentException('An exact amount is required.');
+        }
+
+        return BigDecimal::of($value);
     }
 
     /**
